@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Sergey D](https://up.htmlacademy.ru/ecmascript/14/user/412507).
-* Наставник: `Неизвестно`.
+* Наставник: [Сергей Глазков](https://htmlacademy.ru/profile/id1194253).
 
 ---
 
