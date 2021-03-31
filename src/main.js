@@ -2,7 +2,7 @@ import {createRouteAndCostTemplate} from './view/route-and-cost.js';
 import {createSiteMenuTemplate} from './view/site-menu.js';
 import {createFilterTemplate} from './view/filter.js';
 import {createSortTemplate} from './view/sort.js';
-import {createListTemplate} from './view/list.js';
+import {createListTemplate} from './view/createListTemplate.js';
 import {createEventEditTemplate} from './view/event-edit.js';
 
 const LIST_COUNT = 3;

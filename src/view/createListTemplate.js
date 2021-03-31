@@ -1,4 +1,4 @@
-export const createListTemplate = () => {
+const createListTemplate = () => {
   return `<ul class="trip-events__list">
     <li class="trip-events__item">
       <div class="event">
@@ -39,3 +39,5 @@ export const createListTemplate = () => {
     </li>
   </ul>`;
 };
+
+export {createListTemplate};
