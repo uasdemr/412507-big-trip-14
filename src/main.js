@@ -4,6 +4,7 @@ import {createFilterTemplate} from './view/filter.js';
 import {createSortTemplate} from './view/sort.js';
 import {createListTemplate} from './view/createListTemplate.js';
 import {createEventEditTemplate} from './view/event-edit.js';
+import {generatePoints} from './mock/point.js';
 
 const LIST_COUNT = 3;
 
@@ -27,3 +28,5 @@ for (let i = 0; i < LIST_COUNT; i++) {
 
 const tripEventsList = tripEvents.querySelector('.trip-events__list');
 render(tripEventsList, createEventEditTemplate(), 'afterbegin');
+
+const points = generatePoints(20);
