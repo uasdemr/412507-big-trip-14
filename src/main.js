@@ -6,7 +6,7 @@ import {createListTemplate} from './view/createListTemplate.js';
 import {createEventEditTemplate} from './view/event-edit.js';
 import {generatePoints} from './mock/point.js';
 
-const LIST_COUNT = 3;
+const LIST_COUNT = 20;
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -22,11 +22,13 @@ render(navigation, createSiteMenuTemplate(), 'beforeend');
 render(filter, createFilterTemplate(), 'beforeend');
 render(tripEvents, createSortTemplate(), 'beforeend');
 
-for (let i = 0; i < LIST_COUNT; i++) {
-  render(tripEvents, createListTemplate(), 'beforeend');
-}
+const points = generatePoints(20);
 
 const tripEventsList = tripEvents.querySelector('.trip-events__list');
 render(tripEventsList, createEventEditTemplate(), 'afterbegin');
 
-const points = generatePoints(20);
+for (let i = 0; i < LIST_COUNT; i++) {
+  render(tripEventsList, createListTemplate(points[i]), 'beforeend');
+}
+
+
