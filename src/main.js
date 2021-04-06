@@ -20,12 +20,12 @@ const tripEvents = document.querySelector('.trip-events');
 render(tripMain, createRouteAndCostTemplate(), 'afterbegin');
 render(navigation, createSiteMenuTemplate(), 'beforeend');
 render(filter, createFilterTemplate(), 'beforeend');
-render(tripEvents, createSortTemplate(), 'beforeend');
+render(tripEvents, createSortTemplate(), 'afterbegin');
 
 const points = generatePoints(20);
 
 const tripEventsList = tripEvents.querySelector('.trip-events__list');
-render(tripEventsList, createEventEditTemplate(), 'afterbegin');
+render(tripEventsList, createEventEditTemplate(), 'beforeend');
 
 for (let i = 0; i < LIST_COUNT; i++) {
   render(tripEventsList, createListTemplate(points[i]), 'beforeend');
