@@ -2,10 +2,10 @@ import {createOfferItem} from './createOfferItem.js';
 import {timeMakerDayJs} from '../mock/utils';
 
 const createListTemplate = (point) => {
-  console.log(point);
+  // console.log(point);
   const eventFavoriteBtnClassName  = point.is_favorite ? 'event__favorite-btn--active' : '';
   const dateArr = timeMakerDayJs(point);
-  console.log(dateArr);
+  // console.log(dateArr);
   const event = `${point.type} ${point.destination.name}`;
 
   return `<li class="trip-events__item">

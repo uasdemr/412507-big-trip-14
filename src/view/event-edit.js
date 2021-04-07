@@ -1,4 +1,5 @@
-const createEventEditTemplate = () => {
+const createEventEditTemplate = (point) => {
+  console.log(point);
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">

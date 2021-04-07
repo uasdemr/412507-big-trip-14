@@ -25,10 +25,8 @@ render(tripEvents, createSortTemplate(), 'afterbegin');
 const points = generatePoints(20);
 
 const tripEventsList = tripEvents.querySelector('.trip-events__list');
-render(tripEventsList, createEventEditTemplate(), 'beforeend');
+render(tripEventsList, createEventEditTemplate(points[0]), 'beforeend');
 
 for (let i = 0; i < LIST_COUNT; i++) {
   render(tripEventsList, createListTemplate(points[i]), 'beforeend');
 }
-
-
