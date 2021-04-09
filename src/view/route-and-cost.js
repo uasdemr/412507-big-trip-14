@@ -1,16 +1,15 @@
 const createRouteAndCostTemplate = (point) => {
   const offers = point.offers;
-  const basePrice = point.base_price;
-
+  const basePrice = point.basePrice;
   const sumOffersCost = (offers) => {
     if (offers.length === 0) {
-      return null;
+      return 0;
     }
     const initialValue = 0;
     return offers.reduce((accumulator, currentValue) => accumulator + currentValue.price, initialValue);
   };
 
-  const offersSum = sumOffersCost(offers) ? sumOffersCost(offers) : 0;
+  const offersSum = sumOffersCost(offers);
 
   const tripCost = basePrice + offersSum;
 

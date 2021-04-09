@@ -1,9 +1,9 @@
-import {createOfferItem} from './createOfferItem.js';
+import {createOfferItem} from './create-offer-item.js';
 import {timeMakerDayJs} from '../mock/utils';
 
 const createListTemplate = (point) => {
   // console.log(point);
-  const eventFavoriteBtnClassName  = point.is_favorite ? 'event__favorite-btn--active' : '';
+  const eventFavoriteBtnClassName  = point.isFavorite ? 'event__favorite-btn--active' : '';
   const dateObj = timeMakerDayJs(point);
   // console.log(dateObj);
   const event = `${point.type} ${point.destination.name}`;
@@ -24,7 +24,7 @@ const createListTemplate = (point) => {
         <p class="event__duration">${dateObj.eventDuration}</p>
       </div>
       <p class="event__price">
-        &euro;&nbsp;<span class="event__price-value">${point.base_price}</span>
+        &euro;&nbsp;<span class="event__price-value">${point.basePrice}</span>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">

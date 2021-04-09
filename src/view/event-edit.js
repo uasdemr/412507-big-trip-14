@@ -1,16 +1,18 @@
 import {timeMakerDayJs} from '../mock/utils';
-import {createOffers} from './createEditFormOffers.js';
-import {createEventDestination} from './eventDestination.js';
+import {createOffers} from './create-edit-form-offers.js';
+import {createEventDestination} from './event-destination.js';
+import {EVENT_TYPES} from './const.js';
+
 
 const createEventEditTemplate = (point) => {
   const dateObj = timeMakerDayJs(point);
   const eventTypeItem = () => {
-    const types = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
-
-    return types.map((item) => `<div class="event__type-item">
-      <input class="event__type-input  visually-hidden" type="radio" value="${item.toLowerCase()}">
-      <label class="event__type-label  event__type-label--${item.toLowerCase()}">${item}</label>
-    </div>`).join('');
+    return Object.entries(EVENT_TYPES).map(([key, val]) => {
+      return `<div class="event__type-item">
+        <input class="event__type-input  visually-hidden" type="radio" value="${key.toLowerCase()}">
+        <label class="event__type-label  event__type-label--${key.toLowerCase()}">${val}</label>
+      </div>`;
+    });
   };
 
   return `<li class="trip-events__item">
@@ -55,7 +57,7 @@ const createEventEditTemplate = (point) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.base_price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.basePrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>

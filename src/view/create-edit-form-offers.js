@@ -1,11 +1,5 @@
 
 const createOffers = (point) => {
-  const offerKeys = [];
-  point.offers.forEach((element) => {
-    offerKeys.push(element.title);
-  });
-
-
   let template = '';
   for(const offer of point.offers) {
     template += `<div class="event__offer-selector">

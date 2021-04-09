@@ -2,8 +2,8 @@ import { isFeature, isPast } from '../mock/utils.js';
 
 const pointToFilterMap = {
   everything: (points) => points.length,
-  future: (points) => points.filter((point) => isFeature(point.date_from)).length,
-  past: (points) => points.filter((point) => isPast(point.date_to)).length,
+  future: (points) => points.filter((point) => isFeature(point.dateFrom)).length,
+  past: (points) => points.filter((point) => isPast(point.dateTo)).length,
 };
 
 const generateFilter = (points) => {

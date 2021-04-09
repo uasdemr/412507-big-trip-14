@@ -2,10 +2,17 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
+const getRandomInteger = (a = 0, b = 1) => {
+  const lower = Math.ceil(Math.min(a, b));
+  const upper = Math.floor(Math.max(a, b));
+
+  return Math.floor(lower + Math.random() * (upper - lower + 1));
+};
+
 //Передавать сюда date_from и date_to
 const timeMakerDayJs = (point) => {
-  const dayjs1 = dayjs(point.date_from);
-  const dayjs2 = dayjs(point.date_to);
+  const dayjs1 = dayjs(point.dateFrom);
+  const dayjs2 = dayjs(point.dateTo);
   const diff = dayjs2.diff(dayjs1);
   const diffDate = dayjs(diff);
 
@@ -42,4 +49,4 @@ const isPast = (dateTo) => {
   return new Date(dateTo) < Date.now();
 };
 
-export {timeMakerDayJs, isFeature, isPast};
+export {timeMakerDayJs, isFeature, isPast, getRandomInteger};
