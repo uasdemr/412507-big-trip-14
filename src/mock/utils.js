@@ -35,4 +35,11 @@ const timeMakerDayJs = (point) => {
   return objReturned;
 };
 
-export {timeMakerDayJs};
+const isFeature = (dateFrom) => {
+  return new Date(dateFrom) >= Date.now();
+};
+const isPast = (dateTo) => {
+  return new Date(dateTo) < Date.now();
+};
+
+export {timeMakerDayJs, isFeature, isPast};

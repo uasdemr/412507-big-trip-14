@@ -258,8 +258,8 @@ const generatePoint = (num) => {
   const typeGenerated = typeGenerator();
   return {
     'base_price': getRandomInteger(5, 2000),
-    'date_from': '2019-07-10T08:53:00.845Z',
-    'date_to': '2019-07-13T10:03:00.375Z',
+    'date_from': '2021-04-10T08:53:00.845Z',
+    'date_to': '2021-05-13T10:03:00.375Z',
     'destination': generateDestination(),
     'id': num,
     'is_favorite': Math.random() > 0.5,
