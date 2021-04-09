@@ -2,7 +2,7 @@ import {createRouteAndCostTemplate} from './view/route-and-cost.js';
 import {createSiteMenuTemplate} from './view/site-menu.js';
 import {createFilterTemplate} from './view/filter.js';
 import {createSortTemplate} from './view/sort.js';
-import {createListTemplate} from './view/create-list-template.js';
+import {createListTemplate} from './view/list-template.js';
 import {createEventEditTemplate} from './view/event-edit.js';
 import {generatePoints} from './mock/point.js';
 import {generateFilter} from './view/filter.js';

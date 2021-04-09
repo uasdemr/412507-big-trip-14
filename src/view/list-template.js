@@ -1,4 +1,4 @@
-import {createOfferItem} from './create-offer-item.js';
+import {createOfferItem} from './offer-item.js';
 import {timeMakerDayJs} from '../mock/utils';
 
 const createListTemplate = (point) => {

@@ -1,5 +1,4 @@
-
-const createOffers = (point) => {
+const createEditFormOffers = (point) => {
   let template = '';
   for(const offer of point.offers) {
     template += `<div class="event__offer-selector">
@@ -14,4 +13,4 @@ const createOffers = (point) => {
   return template;
 };
 
-export {createOffers};
+export {createEditFormOffers};

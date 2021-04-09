@@ -1,5 +1,5 @@
 import {timeMakerDayJs} from '../mock/utils';
-import {createOffers} from './create-edit-form-offers.js';
+import {createEditFormOffers} from './edit-form-offers.js';
 import {createEventDestination} from './event-destination.js';
 import {EVENT_TYPES} from './const.js';
 
@@ -71,7 +71,7 @@ const createEventEditTemplate = (point) => {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createOffers(point)}
+            ${createEditFormOffers(point)}
           </div>
           ${createEventDestination(point.destination)}
         </section>
