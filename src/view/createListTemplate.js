@@ -4,24 +4,24 @@ import {timeMakerDayJs} from '../mock/utils';
 const createListTemplate = (point) => {
   // console.log(point);
   const eventFavoriteBtnClassName  = point.is_favorite ? 'event__favorite-btn--active' : '';
-  const dateArr = timeMakerDayJs(point);
-  // console.log(dateArr);
+  const dateObj = timeMakerDayJs(point);
+  // console.log(dateObj);
   const event = `${point.type} ${point.destination.name}`;
 
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="${dateArr.eventDateDateTime}">${dateArr.eventDate}</time>
+      <time class="event__date" datetime="${dateObj.eventDateDateTime}">${dateObj.eventDate}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${point.type}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${event}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${dateArr.eventStartTimeDateTime}">${dateArr.eventStartTime}</time>
+          <time class="event__start-time" datetime="${dateObj.eventStartTimeDateTime}">${dateObj.eventStartTime}</time>
           &mdash;
-          <time class="event__end-time" datetime="${dateArr.eventEndTimeDateTime}">${dateArr.eventEndTime}</time>
+          <time class="event__end-time" datetime="${dateObj.eventEndTimeDateTime}">${dateObj.eventEndTime}</time>
         </p>
-        <p class="event__duration">${dateArr.eventDuration}</p>
+        <p class="event__duration">${dateObj.eventDuration}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${point.base_price}</span>

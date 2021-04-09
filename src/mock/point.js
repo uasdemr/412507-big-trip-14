@@ -26,23 +26,16 @@ const citys = ['Amsterdam', 'Chamonix', 'Geneva', 'Краснодар', 'Рос�
 
 
 const generateDestination = () => {
-  const generateFotos = (num) => {
+  const generateFotos = () => {
 
     const generateFoto = () => {
       const num = getRandomInteger(1, 10000);
-      const mainStr = `http://picsum.photos/248/152?r=${num}`;
-      return mainStr;
+      return `http://picsum.photos/248/152?r=${num}`;
     };
 
     const objectCreator = () => {
-      const returnedArr = [];
-      for (let i = 0; i < num; i++) {
-        returnedArr.push(generateFoto());
-      }
-
-      // надо вернуть массив наполненный объектами типа
       const returnedObj = {
-        'src': returnedArr.join(','),
+        'src': generateFoto(),
         'description': generateDescription(),
       };
 
@@ -69,7 +62,7 @@ const generateDestination = () => {
   return {
     'description': generateDescription(),
     'name': citys[getRandomInteger(0, citys.length - 1)],
-    'pictures': generateFotos(getRandomInteger(0, 7)),
+    'pictures': generateFotos(),
   };
 };
 
@@ -266,7 +259,7 @@ const generatePoint = (num) => {
   return {
     'base_price': getRandomInteger(5, 2000),
     'date_from': '2019-07-10T08:53:00.845Z',
-    'date_to': '2019-07-10T10:03:00.375Z',
+    'date_to': '2019-07-13T10:03:00.375Z',
     'destination': generateDestination(),
     'id': num,
     'is_favorite': Math.random() > 0.5,

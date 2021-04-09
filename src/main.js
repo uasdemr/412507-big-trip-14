@@ -17,12 +17,13 @@ const navigation = tripMain.querySelector('.trip-controls__navigation');
 const filter = tripMain.querySelector('.trip-controls__filters');
 const tripEvents = document.querySelector('.trip-events');
 
-render(tripMain, createRouteAndCostTemplate(), 'afterbegin');
+const points = generatePoints(20);
+
+render(tripMain, createRouteAndCostTemplate(points[0]), 'afterbegin');
 render(navigation, createSiteMenuTemplate(), 'beforeend');
 render(filter, createFilterTemplate(), 'beforeend');
 render(tripEvents, createSortTemplate(), 'afterbegin');
 
-const points = generatePoints(20);
 
 const tripEventsList = tripEvents.querySelector('.trip-events__list');
 render(tripEventsList, createEventEditTemplate(points[0]), 'beforeend');
@@ -30,3 +31,4 @@ render(tripEventsList, createEventEditTemplate(points[0]), 'beforeend');
 for (let i = 0; i < LIST_COUNT; i++) {
   render(tripEventsList, createListTemplate(points[i]), 'beforeend');
 }
+

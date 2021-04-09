@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
+//Передавать сюда date_from и date_to
 const timeMakerDayJs = (point) => {
   const dayjs1 = dayjs(point.date_from);
   const dayjs2 = dayjs(point.date_to);
@@ -15,6 +16,12 @@ const timeMakerDayJs = (point) => {
   const dateFromReturned = dayjs1.format('HH:mm');
   const dateToReturned = dayjs2.format('HH:mm');
   const diffReturned = diffDate.format('DD[D] HH[H] mm[M]');
+
+  const editFormFormatedData = {
+    eventStartTimeDateTime: dayjs1.format('DD/MM/YY HH:mm'),
+    eventEndTimeDateTime: dayjs2.format('DD/MM/YY HH:mm'),
+  };
+
   const objReturned = {
     eventStartTime: dateFromReturned,
     eventEndTime: dateToReturned,
@@ -23,6 +30,7 @@ const timeMakerDayJs = (point) => {
     eventDateDateTime,
     eventStartTimeDateTime,
     eventEndTimeDateTime,
+    editFormFormatedData,
   };
   return objReturned;
 };
