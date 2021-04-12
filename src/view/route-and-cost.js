@@ -1,3 +1,5 @@
+import { createElement } from '../mock/utils.js';
+
 const createRouteAndCostTemplate = (point) => {
   const offers = point.offers;
   const basePrice = point.basePrice;
@@ -26,4 +28,25 @@ const createRouteAndCostTemplate = (point) => {
   </section>`;
 };
 
-export { createRouteAndCostTemplate };
+
+export default class RouteAndCost {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createRouteAndCostTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
