@@ -3,10 +3,11 @@ import SiteMenuView from './view/site-menu.js';
 import { generateFilter } from './view/filter.js';
 import FilterView from './view/filter.js';
 import SortView from './view/sort.js';
-import ListView from './view/list-template.js';
+import PointView from './view/point.js';
 import EventEditView from './view/event-edit.js';
 import { generatePoints } from './mock/point.js';
 import { render, RenderPosition } from './mock/utils.js';
+import eventListView from './view/list-view.js';
 
 const LIST_COUNT = 20;
 const points = generatePoints(LIST_COUNT);
@@ -23,10 +24,42 @@ render(navigation, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
 render(filter, new FilterView(filters).getElement(), RenderPosition.BEFOREEND);
 render(tripEvents, new SortView().getElement(), RenderPosition.AFTERBEGIN);
 
+const listComponent = new eventListView();
+render(tripEvents, listComponent.getElement(), RenderPosition.BEFOREEND);
 
-const tripEventsList = tripEvents.querySelector('.trip-events__list');
-render(tripEventsList, new EventEditView(points[0]).getElement(), RenderPosition.AFTERBEGIN);
+const renderPoint = (taskListElement, point) => {
+  const pointComponent = new PointView(point);
+  const eventEditComponent = new EventEditView(point);
 
+  const replacePointToForm = () => {
+    taskListElement.replaceChild(eventEditComponent.getElement(), pointComponent.getElement());
+  };
+
+  const replaceFormToPoint = () => {
+    taskListElement.replaceChild(pointComponent.getElement(), eventEditComponent.getElement());
+  };
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
+
+  pointComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replacePointToForm();
+    document.addEventListener('keydown', onEscKeyDown);
+  });
+
+  eventEditComponent.getElement().querySelector('form').addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    replaceFormToPoint();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
+
+  render(taskListElement, pointComponent.getElement(), RenderPosition.BEFOREEND);
+};
 for (const point of points) {
-  render(tripEventsList, new ListView(point).getElement(), RenderPosition.BEFOREEND);
+  renderPoint(listComponent.getElement(), point);
 }
