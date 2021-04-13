@@ -51,7 +51,7 @@ const timeMakerDayJs = (point) => {
     eventEndTimeDateTime: dayjs2.format('DD/MM/YY HH:mm'),
   };
 
-  const objReturned = {
+  const dates = {
     eventStartTime: dateFromReturned,
     eventEndTime: dateToReturned,
     eventDuration: diffReturned,
@@ -61,7 +61,7 @@ const timeMakerDayJs = (point) => {
     eventEndTimeDateTime,
     editFormFormatedData,
   };
-  return objReturned;
+  return dates;
 };
 
 const isFeature = (dateFrom) => {

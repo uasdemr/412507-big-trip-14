@@ -1,4 +1,4 @@
-import { createElement } from '../mock/utils';
+import { createElement } from '../utils/utils';
 
 const createListViewTemplate = () => {
   return '<ul class="trip-events__list"></ul>';

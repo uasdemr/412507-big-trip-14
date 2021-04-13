@@ -1,11 +1,11 @@
-import { timeMakerDayJs, createElement } from '../mock/utils';
+import { timeMakerDayJs, createElement } from '../utils/utils';
 
 const createOfferItem = (offers) => {
   return offers.map((offer) => {
     return `<li class="event__offer">
       <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
-      <span class="event__offer-price">20</span>
+      <span class="event__offer-price">${offer.price}</span>
     </li>`;
   }).join('');
 };
@@ -50,7 +50,7 @@ const createListTemplate = (point) => {
   </li>`;
 };
 
-export default class List {
+export default class Point {
   constructor(point) {
     this._point = point;
     this._element = null;

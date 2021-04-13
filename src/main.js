@@ -1,18 +1,16 @@
 import RouteAndCostView from './view/route-and-cost.js';
 import SiteMenuView from './view/site-menu.js';
-import { generateFilter } from './view/filter.js';
 import FilterView from './view/filter.js';
 import SortView from './view/sort.js';
 import PointView from './view/point.js';
 import EventEditView from './view/event-edit.js';
 import { generatePoints } from './mock/point.js';
-import { render, RenderPosition } from './mock/utils.js';
+import { render, RenderPosition } from './utils/utils.js';
 import eventListView from './view/list-view.js';
 
 const LIST_COUNT = 20;
 const points = generatePoints(LIST_COUNT);
 
-const filters = generateFilter(points);
 const tripMain = document.querySelector('.trip-main');
 const navigation = tripMain.querySelector('.trip-controls__navigation');
 const filter = tripMain.querySelector('.trip-controls__filters');
@@ -21,7 +19,7 @@ const tripEvents = document.querySelector('.trip-events');
 
 render(tripMain, new RouteAndCostView(points[0]).getElement(), RenderPosition.AFTERBEGIN);
 render(navigation, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
-render(filter, new FilterView(filters).getElement(), RenderPosition.BEFOREEND);
+render(filter, new FilterView(points).getElement(), RenderPosition.BEFOREEND);
 render(tripEvents, new SortView().getElement(), RenderPosition.AFTERBEGIN);
 
 const listComponent = new eventListView();
@@ -56,6 +54,10 @@ const renderPoint = (taskListElement, point) => {
     evt.preventDefault();
     replaceFormToPoint();
     document.removeEventListener('keydown', onEscKeyDown);
+  });
+
+  eventEditComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceFormToPoint();
   });
 
   render(taskListElement, pointComponent.getElement(), RenderPosition.BEFOREEND);

@@ -1,4 +1,5 @@
-import { timeMakerDayJs, createElement } from '../mock/utils';
+import { timeMakerDayJs, createElement } from '../utils/utils.js';
+import { offers } from '../mock/point.js';
 import { EVENT_TYPES } from './const.js';
 
 const createEventDestination = (destination) => {
@@ -28,10 +29,11 @@ const createEventDestination = (destination) => {
 };
 
 const createEditFormOffersItem = (point) => {
-  return point.offers.map((offer) => {
+  return offers.find((it) => it.type === point.type).offers.map((offer, index) => {
+    const сhecked = point.offers.some((it) => it.title === offer.title);
     return `<div class="event__offer-selector">
-         <input class="event__offer-checkbox  visually-hidden" type="checkbox" checked>
-         <label class="event__offer-label">
+         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${point.type}-${index}" type="checkbox" ${сhecked ? 'checked' : ''}>
+         <label class="event__offer-label for="event-offer-${point.type}-${index}">
            <span class="event__offer-title">${offer.title}</span>
            &plus;&euro;&nbsp;
            <span class="event__offer-price">${offer.price}</span>
@@ -51,7 +53,7 @@ const createEditFormOffers = (point) => {
 
 
 const createEventEditTemplate = (point) => {
-  const date = timeMakerDayJs(point);
+  const dates = timeMakerDayJs(point);
   const eventTypeItem = () => {
     return Object.entries(EVENT_TYPES).map(([key, val]) => {
       return `<div class="event__type-item">
@@ -92,10 +94,10 @@ const createEventEditTemplate = (point) => {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${date.editFormFormatedData.eventStartTimeDateTime}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dates.editFormFormatedData.eventStartTimeDateTime}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${date.editFormFormatedData.eventEndTimeDateTime}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dates.editFormFormatedData.eventEndTimeDateTime}">
         </div>
 
         <div class="event__field-group  event__field-group--price">

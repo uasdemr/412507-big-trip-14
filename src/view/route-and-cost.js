@@ -1,4 +1,4 @@
-import { createElement } from '../mock/utils.js';
+import { createElement } from '../utils/utils.js';
 
 const createRouteAndCostTemplate = (point) => {
   const offers = point.offers;

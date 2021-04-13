@@ -1,4 +1,4 @@
-import { isFeature, isPast, createElement } from '../mock/utils.js';
+import { isFeature, isPast, createElement } from '../utils/utils.js';
 
 const pointToFilterMap = {
   everything: (points) => points.length,
@@ -6,7 +6,7 @@ const pointToFilterMap = {
   past: (points) => points.filter((point) => isPast(point.dateTo)).length,
 };
 
-export const generateFilter = (points) => {
+const generateFilter = (points) => {
   return Object.entries(pointToFilterMap).map(([filterName, countPoints]) => {
     return {
       name: filterName,
@@ -35,8 +35,8 @@ export const createFilterTemplate = (filter) => {
 
 
 export default class Filter {
-  constructor(filters) {
-    this._filters = filters;
+  constructor(points) {
+    this._filters = generateFilter(points);
     this._element = null;
   }
 

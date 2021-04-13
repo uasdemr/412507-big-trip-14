@@ -1,4 +1,4 @@
-import { createElement } from '../mock/utils.js';
+import { createElement } from '../utils/utils.js';
 
 const createSortTemplate = () => {
   return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">

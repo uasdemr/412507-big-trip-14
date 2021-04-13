@@ -1,5 +1,5 @@
-import {EVENT_TYPES, DESTINATION} from '../view/const.js';
-import {getRandomInteger} from './utils.js';
+import { EVENT_TYPES, DESTINATION } from '../view/const.js';
+import { getRandomInteger } from '../utils/utils.js';
 
 const typeGenerator = () => {
   const types = Object.keys(EVENT_TYPES);
@@ -50,7 +50,7 @@ const generateDestination = () => {
   };
 };
 
-const offersArr = [
+const offers = [
   {
     'type': 'taxi',
     'offers': [
@@ -229,8 +229,22 @@ const offersArr = [
   },
 ];
 
+const getUniqueRandomItemsFromArray = (items) => {
+  const randomItems = [];
+  if (items.length > 0) {
+    for(let i = 0; i < items.length; i++) {
+      const num = getRandomInteger(0, items.length - 1);
+      if(!randomItems.find((it) => it === items[num])) {
+        randomItems.push(items[num]);
+      }
+    }
+  }
+  return randomItems;
+};
+
 const generateOffers = (type) => {
-  return offersArr.find((offer) => offer.type === type).offers;
+  // return offers.find((offer) => offer.type === type).offers;
+  return getUniqueRandomItemsFromArray(offers.find((offer) => offer.type === type).offers);
 };
 
 
@@ -256,4 +270,4 @@ const generatePoints = (num) => {
   return returnedArr;
 };
 
-export { generatePoints };
+export { generatePoints, offers };
