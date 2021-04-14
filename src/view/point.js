@@ -1,11 +1,18 @@
-import {createOfferItem} from './offer-item.js';
-import {timeMakerDayJs} from '../mock/utils';
+import { timeMakerDayJs, createElement } from '../utils/utils';
+
+const createOfferItem = (offers) => {
+  return offers.map((offer) => {
+    return `<li class="event__offer">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
+    </li>`;
+  }).join('');
+};
 
 const createListTemplate = (point) => {
-  // console.log(point);
-  const eventFavoriteBtnClassName  = point.isFavorite ? 'event__favorite-btn--active' : '';
+  const eventFavoriteBtnClassName = point.isFavorite ? 'event__favorite-btn--active' : '';
   const dateObj = timeMakerDayJs(point);
-  // console.log(dateObj);
   const event = `${point.type} ${point.destination.name}`;
 
   return `<li class="trip-events__item">
@@ -43,4 +50,24 @@ const createListTemplate = (point) => {
   </li>`;
 };
 
-export {createListTemplate};
+export default class Point {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createListTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

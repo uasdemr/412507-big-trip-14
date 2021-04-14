@@ -1,18 +1,66 @@
-import {timeMakerDayJs} from '../mock/utils';
-import {createEditFormOffers} from './edit-form-offers.js';
-import {createEventDestination} from './event-destination.js';
-import {EVENT_TYPES} from './const.js';
+import { timeMakerDayJs, createElement } from '../utils/utils.js';
+import { offers } from '../mock/point.js';
+import { EVENT_TYPES } from './const.js';
+
+const createEventDestination = (destination) => {
+
+  const imgCreator = (pictures) => {
+
+    return pictures.map((picture) => {
+      return `<img class="event__photo"
+        src="${picture.src}"
+        alt="${picture.description}"
+      >`;
+    }).join('');
+  };
+
+  return destination.description === '' ? '' : `<section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">${destination.description}</p>
+
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${imgCreator(destination.pictures)}
+      </div>
+    </div>
+  </section>`;
+
+
+};
+
+const createEditFormOffersItem = (point) => {
+  return offers.find((it) => it.type === point.type).offers.map((offer, index) => {
+    const сhecked = point.offers.some((it) => it.title === offer.title);
+    return `<div class="event__offer-selector">
+         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${point.type}-${index}" type="checkbox" ${сhecked ? 'checked' : ''}>
+         <label class="event__offer-label for="event-offer-${point.type}-${index}">
+           <span class="event__offer-title">${offer.title}</span>
+           &plus;&euro;&nbsp;
+           <span class="event__offer-price">${offer.price}</span>
+         </label>
+       </div>`;
+  }).join('');
+};
+
+const createEditFormOffers = (point) => {
+  return `<section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+    <div class="event__available-offers">
+      ${createEditFormOffersItem(point)}
+    </div>
+    </section>`;
+};
 
 
 const createEventEditTemplate = (point) => {
-  const dateObj = timeMakerDayJs(point);
+  const dates = timeMakerDayJs(point);
   const eventTypeItem = () => {
     return Object.entries(EVENT_TYPES).map(([key, val]) => {
       return `<div class="event__type-item">
         <input class="event__type-input  visually-hidden" type="radio" value="${key.toLowerCase()}">
         <label class="event__type-label  event__type-label--${key.toLowerCase()}">${val}</label>
       </div>`;
-    });
+    }).join('');
   };
 
   return `<li class="trip-events__item">
@@ -46,10 +94,10 @@ const createEventEditTemplate = (point) => {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateObj.editFormFormatedData.eventStartTimeDateTime}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dates.editFormFormatedData.eventStartTimeDateTime}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateObj.editFormFormatedData.eventEndTimeDateTime}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dates.editFormFormatedData.eventEndTimeDateTime}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -67,17 +115,31 @@ const createEventEditTemplate = (point) => {
         </button>
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
-          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-          <div class="event__available-offers">
-            ${createEditFormOffers(point)}
-          </div>
-          ${createEventDestination(point.destination)}
-        </section>
+        ${createEditFormOffers(point)}
+        ${createEventDestination(point.destination)}
       </section>
     </form>
   </li>`;
 };
 
-export {createEventEditTemplate};
+export default class EventEdit {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventEditTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

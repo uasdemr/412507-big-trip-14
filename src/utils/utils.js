@@ -2,6 +2,29 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
+const RenderPosition = {
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+};
+
+const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+const createElement = (template) => {
+  const newElement = document.createElement('div');
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
+
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -9,7 +32,6 @@ const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-//Передавать сюда date_from и date_to
 const timeMakerDayJs = (point) => {
   const dayjs1 = dayjs(point.dateFrom);
   const dayjs2 = dayjs(point.dateTo);
@@ -29,7 +51,7 @@ const timeMakerDayJs = (point) => {
     eventEndTimeDateTime: dayjs2.format('DD/MM/YY HH:mm'),
   };
 
-  const objReturned = {
+  const dates = {
     eventStartTime: dateFromReturned,
     eventEndTime: dateToReturned,
     eventDuration: diffReturned,
@@ -39,7 +61,7 @@ const timeMakerDayJs = (point) => {
     eventEndTimeDateTime,
     editFormFormatedData,
   };
-  return objReturned;
+  return dates;
 };
 
 const isFeature = (dateFrom) => {
@@ -49,4 +71,12 @@ const isPast = (dateTo) => {
   return new Date(dateTo) < Date.now();
 };
 
-export {timeMakerDayJs, isFeature, isPast, getRandomInteger};
+export {
+  timeMakerDayJs,
+  isFeature,
+  isPast,
+  getRandomInteger,
+  RenderPosition,
+  render,
+  createElement
+};

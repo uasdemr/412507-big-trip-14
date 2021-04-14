@@ -1,4 +1,4 @@
-import { isFeature, isPast } from '../mock/utils.js';
+import { isFeature, isPast, createElement } from '../utils/utils.js';
 
 const pointToFilterMap = {
   everything: (points) => points.length,
@@ -18,13 +18,13 @@ const generateFilter = (points) => {
 const createFilterItem = (filter) => {
   return filter.map((item) => {
     return `<div class="trip-filters__filter">
-      <input id="filter-${item.name}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${item.name}">
+      <input id="filter-${item.name}" class="trip-filters__filter-input  visually-hidden" type="radio" value="${item.name}" />
       <label class="trip-filters__filter-label" for="filter-${item.name}">${item.name} ${item.count}</label>
     </div>`;
   }).join('');
 };
 
-const createFilterTemplate = (filter) => {
+export const createFilterTemplate = (filter) => {
   return `<form class="trip-filters" action="#" method="get">
     ${createFilterItem(filter)}
 
@@ -32,4 +32,27 @@ const createFilterTemplate = (filter) => {
     <button class="visually-hidden" type="submit">Accept filter</button>
   </form>`;
 };
-export { createFilterTemplate, generateFilter };
+
+
+export default class Filter {
+  constructor(points) {
+    this._filters = generateFilter(points);
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilterTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

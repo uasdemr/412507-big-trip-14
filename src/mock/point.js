@@ -1,5 +1,5 @@
-import {EVENT_TYPES} from '../view/const.js';
-import {getRandomInteger} from './utils.js';
+import { EVENT_TYPES, DESTINATION } from '../view/const.js';
+import { getRandomInteger } from '../utils/utils.js';
 
 const typeGenerator = () => {
   const types = Object.keys(EVENT_TYPES);
@@ -34,8 +34,8 @@ const generateDestination = () => {
   };
 
   const generateDescription = () => {
-    const destination = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.';
-    const destinations = destination.split('. ');
+
+    const destinations = DESTINATION.split('. ');
     let newDestination = '';
     for (let i = 0; i < getRandomInteger(0, destinations.length); i++) {
       newDestination += destinations[i] + '.';
@@ -50,7 +50,7 @@ const generateDestination = () => {
   };
 };
 
-const offersArr = [
+const offers = [
   {
     'type': 'taxi',
     'offers': [
@@ -229,8 +229,22 @@ const offersArr = [
   },
 ];
 
+const getUniqueRandomItemsFromArray = (items) => {
+  const randomItems = [];
+  if (items.length > 0) {
+    for(let i = 0; i < items.length; i++) {
+      const num = getRandomInteger(0, items.length - 1);
+      if(!randomItems.find((it) => it === items[num])) {
+        randomItems.push(items[num]);
+      }
+    }
+  }
+  return randomItems;
+};
+
 const generateOffers = (type) => {
-  return offersArr.find((offer) => offer.type === type).offers;
+  // return offers.find((offer) => offer.type === type).offers;
+  return getUniqueRandomItemsFromArray(offers.find((offer) => offer.type === type).offers);
 };
 
 
@@ -256,4 +270,4 @@ const generatePoints = (num) => {
   return returnedArr;
 };
 
-export { generatePoints };
+export { generatePoints, offers };
