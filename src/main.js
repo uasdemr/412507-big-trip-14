@@ -7,23 +7,15 @@ import EventEditView from './view/event-edit.js';
 import { generatePoints } from './mock/point.js';
 import { render, RenderPosition } from './utils/utils.js';
 import eventListView from './view/list-view.js';
+import NoPointView from './view/no-point.js';
+import {createEmptyPoint} from './utils/utils.js';
 
-const LIST_COUNT = 20;
-const points = generatePoints(LIST_COUNT);
 
 const tripMain = document.querySelector('.trip-main');
 const navigation = tripMain.querySelector('.trip-controls__navigation');
 const filter = tripMain.querySelector('.trip-controls__filters');
 const tripEvents = document.querySelector('.trip-events');
-
-
-render(tripMain, new RouteAndCostView(points[0]).getElement(), RenderPosition.AFTERBEGIN);
-render(navigation, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
-render(filter, new FilterView(points).getElement(), RenderPosition.BEFOREEND);
-render(tripEvents, new SortView().getElement(), RenderPosition.AFTERBEGIN);
-
 const listComponent = new eventListView();
-render(tripEvents, listComponent.getElement(), RenderPosition.BEFOREEND);
 
 const renderPoint = (taskListElement, point) => {
   const pointComponent = new PointView(point);
@@ -62,6 +54,22 @@ const renderPoint = (taskListElement, point) => {
 
   render(taskListElement, pointComponent.getElement(), RenderPosition.BEFOREEND);
 };
-for (const point of points) {
-  renderPoint(listComponent.getElement(), point);
+
+const LIST_COUNT = 20;
+const points = generatePoints(LIST_COUNT);
+
+if (points.length !== 0) {
+  render(tripEvents, new SortView().getElement(), RenderPosition.AFTERBEGIN);
+  render(tripMain, new RouteAndCostView(points[0]).getElement(), RenderPosition.AFTERBEGIN);
+  for (const point of points) {
+    renderPoint(listComponent.getElement(), point);
+  }
+} else {
+  render(tripEvents, new NoPointView().getElement(), RenderPosition.BEFOREEND);
+  render(listComponent.getElement(), new EventEditView(createEmptyPoint()).getElement(), RenderPosition.BEFOREEND);
 }
+
+render(navigation, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
+render(filter, new FilterView(points).getElement(), RenderPosition.BEFOREEND);
+
+render(tripEvents, listComponent.getElement(), RenderPosition.BEFOREEND);
