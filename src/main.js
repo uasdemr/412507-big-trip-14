@@ -66,7 +66,6 @@ if (points.length !== 0) {
   }
 } else {
   render(tripEvents, new NoPointView().getElement(), RenderPosition.BEFOREEND);
-  render(listComponent.getElement(), new EventEditView(createEmptyPoint()).getElement(), RenderPosition.BEFOREEND);
 }
 
 render(navigation, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
