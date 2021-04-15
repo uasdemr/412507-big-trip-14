@@ -24,8 +24,6 @@ const createEventDestination = (destination) => {
       </div>
     </div>
   </section>`;
-
-
 };
 
 const createEditFormOffersItem = (point) => {
@@ -127,7 +125,6 @@ export default class EventEdit {
     this._point = point;
     this._element = null;
   }
-
   getTemplate() {
     return createEventEditTemplate(this._point);
   }

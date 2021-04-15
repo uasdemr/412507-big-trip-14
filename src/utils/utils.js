@@ -2,6 +2,32 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
+const createEmptyPoint = () => {
+  return {
+    'basePrice': 0,
+    'dateFrom': dayjs(Date.now()).toISOString(),
+    'dateTo': null,
+    'destination': {
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      name: 'Ростов-на-дону',
+      pictures: [
+        {
+          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.Cras aliquet varius magna, non porta ligula feugiat eget.',
+          src: 'http://picsum.photos/248/152?r=8899',
+        },
+        {
+          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.Cras aliquet varius magna, non porta ligula feugiat eget.',
+          src: 'http://picsum.photos/248/152?r=6649',
+        },
+      ],
+    },
+    'id': 0,
+    'isFavorite': 0,
+    'offers': [],
+    'type': 'taxi',
+  };
+};
+
 const RenderPosition = {
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
@@ -78,5 +104,6 @@ export {
   getRandomInteger,
   RenderPosition,
   render,
-  createElement
+  createElement,
+  createEmptyPoint
 };
