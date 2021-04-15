@@ -8,7 +8,6 @@ import { generatePoints } from './mock/point.js';
 import { render, RenderPosition } from './utils/utils.js';
 import eventListView from './view/list-view.js';
 import NoPointView from './view/no-point.js';
-import {createEmptyPoint} from './utils/utils.js';
 
 
 const tripMain = document.querySelector('.trip-main');
