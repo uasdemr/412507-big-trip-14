@@ -1,6 +1,7 @@
-import { timeMakerDayJs, createElement } from '../utils/utils.js';
+import { timeMakerDayJs } from '../utils/utils.js';
 import { offers } from '../mock/point.js';
 import { EVENT_TYPES } from './const.js';
+import AbstractView from './abstract.js';
 
 const createEventDestination = (destination) => {
 
@@ -120,23 +121,35 @@ const createEventEditTemplate = (point) => {
   </li>`;
 };
 
-export default class EventEdit {
+export default class EventEdit extends AbstractView{
   constructor(point) {
+    super();
     this._point = point;
     this._element = null;
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._formBtnCloseClickHandler = this._formBtnCloseClickHandler.bind(this);
   }
+
   getTemplate() {
     return createEventEditTemplate(this._point);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
   }
 
-  removeElement() {
-    this._element = null;
+  _formBtnCloseClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.formCloseClick();
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
+  }
+  setFormClickHandler(callback) {
+    this._callback.formCloseClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formBtnCloseClickHandler);
   }
 }

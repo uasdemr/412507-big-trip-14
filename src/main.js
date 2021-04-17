@@ -36,19 +36,20 @@ const renderPoint = (taskListElement, point) => {
     }
   };
 
-  pointComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+  pointComponent.setClickHandler(() => {
     replacePointToForm();
     document.addEventListener('keydown', onEscKeyDown);
   });
 
-  eventEditComponent.getElement().querySelector('form').addEventListener('submit', (evt) => {
+  eventEditComponent.setFormSubmitHandler((evt) => {
     evt.preventDefault();
     replaceFormToPoint();
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  eventEditComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+  eventEditComponent.setFormClickHandler(() => {
     replaceFormToPoint();
+    document.removeEventListener('keydown', onEscKeyDown);
   });
 
   render(taskListElement, pointComponent.getElement(), RenderPosition.BEFOREEND);

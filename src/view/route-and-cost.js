@@ -1,4 +1,4 @@
-import { createElement } from '../utils/utils.js';
+import AbstractView from './abstract.js';
 
 const createRouteAndCostTemplate = (point) => {
   const offers = point.offers;
@@ -29,24 +29,14 @@ const createRouteAndCostTemplate = (point) => {
 };
 
 
-export default class RouteAndCost {
+export default class RouteAndCost extends AbstractView {
   constructor(point) {
+    super();
     this._point = point;
     this._element = null;
   }
 
   getTemplate() {
     return createRouteAndCostTemplate(this._point);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
