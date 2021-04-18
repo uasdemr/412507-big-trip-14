@@ -1,4 +1,4 @@
-import { timeMakerDayJs } from '../utils/utils.js';
+import { timeMakerDayJs } from '../utils/point.js';
 import { offers } from '../mock/point.js';
 import { EVENT_TYPES } from './const.js';
 import AbstractView from './abstract.js';
@@ -136,12 +136,12 @@ export default class EventEdit extends AbstractView{
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(evt);
   }
 
   _formBtnCloseClickHandler(evt) {
     evt.preventDefault();
-    this._callback.formCloseClick();
+    this._callback.formCloseClick(evt);
   }
 
   setFormSubmitHandler(callback) {

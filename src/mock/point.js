@@ -1,5 +1,5 @@
 import { EVENT_TYPES, DESTINATION } from '../view/const.js';
-import { getRandomInteger } from '../utils/utils.js';
+import { getRandomInteger } from '../utils/common';
 
 const typeGenerator = () => {
   const types = Object.keys(EVENT_TYPES);

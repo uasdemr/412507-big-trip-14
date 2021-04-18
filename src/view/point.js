@@ -1,4 +1,4 @@
-import { timeMakerDayJs } from '../utils/utils';
+import { timeMakerDayJs } from '../utils/point.js';
 import AbstractView from './abstract.js';
 
 const createOfferItem = (offers) => {

@@ -1,4 +1,4 @@
-import { isFeature, isPast } from '../utils/utils.js';
+import { isFeature, isPast } from '../utils/point.js';
 import AbstractView from './abstract.js';
 
 const pointToFilterMap = {
