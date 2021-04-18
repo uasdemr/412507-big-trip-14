@@ -1,4 +1,5 @@
-import { isFeature, isPast, createElement } from '../utils/utils.js';
+import { isFeature, isPast } from '../utils/point.js';
+import AbstractView from './abstract.js';
 
 const pointToFilterMap = {
   everything: (points) => points.length,
@@ -34,25 +35,15 @@ export const createFilterTemplate = (filter) => {
 };
 
 
-export default class Filter {
+export default class Filter extends AbstractView {
   constructor(points) {
+    super();
     this._filters = generateFilter(points);
     this._element = null;
   }
 
   getTemplate() {
     return createFilterTemplate(this._filters);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+
 dayjs.extend(relativeTime);
 
-const createEmptyPoint = () => {
+export const createEmptyPoint = () => {
   return {
     'basePrice': 0,
     'dateFrom': dayjs(Date.now()).toISOString(),
@@ -28,37 +29,15 @@ const createEmptyPoint = () => {
   };
 };
 
-const RenderPosition = {
-  AFTERBEGIN: 'afterbegin',
-  BEFOREEND: 'beforeend',
+export const isFeature = (dateFrom) => {
+  return new Date(dateFrom) >= Date.now();
 };
 
-const render = (container, element, place) => {
-  switch (place) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RenderPosition.BEFOREEND:
-      container.append(element);
-      break;
-  }
+export const isPast = (dateTo) => {
+  return new Date(dateTo) < Date.now();
 };
 
-const createElement = (template) => {
-  const newElement = document.createElement('div');
-  newElement.innerHTML = template;
-
-  return newElement.firstChild;
-};
-
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
-const timeMakerDayJs = (point) => {
+export const timeMakerDayJs = (point) => {
   const dayjs1 = dayjs(point.dateFrom);
   const dayjs2 = dayjs(point.dateTo);
   const diff = dayjs2.diff(dayjs1);
@@ -90,20 +69,3 @@ const timeMakerDayJs = (point) => {
   return dates;
 };
 
-const isFeature = (dateFrom) => {
-  return new Date(dateFrom) >= Date.now();
-};
-const isPast = (dateTo) => {
-  return new Date(dateTo) < Date.now();
-};
-
-export {
-  timeMakerDayJs,
-  isFeature,
-  isPast,
-  getRandomInteger,
-  RenderPosition,
-  render,
-  createElement,
-  createEmptyPoint
-};
