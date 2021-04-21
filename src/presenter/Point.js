@@ -3,13 +3,20 @@ import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import PointView from '../view/point.js';
 import EventEditView from '../view/event-edit.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class Point {
-  constructor(pointListContainer, changeData) {
+  constructor(pointListContainer, changeData, changeMode) {
     this._pointListContainer = pointListContainer;
     this._changeData = changeData;
+    this._changeMode = changeMode;
 
     this._pointComponent = null;
     this._eventEditComponent = null;
+    this._mode = Mode.DEFAULT;
 
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handlePointClickOpen = this._handlePointClickOpen.bind(this);
@@ -40,11 +47,15 @@ export default class Point {
     // Проверка на наличие в DOM необходима,
     // чтобы не пытаться заменить то, что не было отрисовано
     if (this._pointListContainer.getElement().contains(prevPointComponent.getElement())) {
-      replace(this._pointComponent, prevPointComponent);
+      if (this._mode === Mode.DEFAULT) {
+        replace(this._pointComponent, prevPointComponent);
+      }
     }
 
     if (this._pointListContainer.getElement().contains(prevEventEditComponent.getElement())) {
-      replace(this._eventEditComponent, prevEventEditComponent);
+      if (this._mode === Mode.EDITING) {
+        replace(this._eventEditComponent, prevEventEditComponent);
+      }
     }
 
     remove(prevPointComponent);
@@ -56,12 +67,21 @@ export default class Point {
     remove(this._eventEditComponent);
   }
 
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceFormToPoint();
+    }
+  }
+
   _replacePointToForm() {
     replace(this._eventEditComponent, this._pointComponent);
+    this._changeMode();
+    this._mode = Mode.EDITING;
   }
 
   _replaceFormToPoint() {
     replace(this._pointComponent, this._eventEditComponent);
+    this._mode = Mode.DEFAULT;
   }
 
   _onEscKeyDown(evt) {

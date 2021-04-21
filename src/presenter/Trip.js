@@ -27,6 +27,7 @@ export default class Trip {
     this._noPointComponents = new NoPointView();
 
     this._handlePointChange = this._handlePointChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
   }
 
   init(tripPoints) {
@@ -34,6 +35,12 @@ export default class Trip {
     // Метод для инициализации (начала работы) модуля,
     // малая часть текущей функции renderBoard в main.js
     this._renderBoard();
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.resetView());
   }
 
   _handlePointChange(updatedPoint) {
@@ -64,7 +71,7 @@ export default class Trip {
 
 
   _renderTrip(point) {
-    const pointPresenter = new PointPresenter(this._eventListComponent, this._handlePointChange);
+    const pointPresenter = new PointPresenter(this._eventListComponent, this._handlePointChange, this._handleModeChange);
     pointPresenter.init(point);
     this._pointPresenter[point.id] = pointPresenter;
   }
