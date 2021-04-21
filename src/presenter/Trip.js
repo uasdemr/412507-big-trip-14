@@ -1,13 +1,15 @@
 // import { generatePoints } from './mock/point.js';
-import { render, RenderPosition, replace } from '../utils/render.js';
+import { render, RenderPosition, remove } from '../utils/render.js';
+import {updateItem} from '../utils/common.js';
 import RouteAndCostView from '../view/route-and-cost.js';
 import SiteMenuView from '../view/site-menu.js';
 import FilterView from '../view/filter.js';
 import SortView from '../view/sort.js';
-import PointView from '../view/point.js';
-import EventEditView from '../view/event-edit.js';
 import eventListView from '../view/list-view.js';
 import NoPointView from '../view/no-point.js';
+import PointPresenter from './Point.js';
+
+const TASK_COUNT_PER_STEP = 20;
 
 export default class Trip {
   constructor(tripContainer, tripMainElement, navigationElement, filterElement) {
@@ -15,12 +17,16 @@ export default class Trip {
     this._tripMainElement = tripMainElement;
     this._navigationElement = navigationElement;
     this._filterElement = filterElement;
+    this._renderedPointCount = TASK_COUNT_PER_STEP;
+    this._pointPresenter = {};
 
 
     this._siteMenuComponent = new SiteMenuView();
     this._sortComponent = new SortView();
     this._eventListComponent = new eventListView();
     this._noPointComponents = new NoPointView();
+
+    this._handlePointChange = this._handlePointChange.bind(this);
   }
 
   init(tripPoints) {
@@ -28,6 +34,11 @@ export default class Trip {
     // Метод для инициализации (начала работы) модуля,
     // малая часть текущей функции renderBoard в main.js
     this._renderBoard();
+  }
+
+  _handlePointChange(updatedPoint) {
+    this._tripPoints = updateItem(this._tripPoints, updatedPoint);
+    this._pointPresenter[updatedPoint.id].init(updatedPoint);
   }
 
   _renderRouteAndCost() {
@@ -53,45 +64,18 @@ export default class Trip {
 
 
   _renderTrip(point) {
-    // Метод, куда уйдёт логика созданию и рендерингу компонетов задачи,
-    // текущая функция renderTask в main.js
-    const pointComponent = new PointView(point);
-    const eventEditComponent = new EventEditView(point);
+    const pointPresenter = new PointPresenter(this._eventListComponent, this._handlePointChange);
+    pointPresenter.init(point);
+    this._pointPresenter[point.id] = pointPresenter;
+  }
 
-    const replacePointToForm = () => {
-      replace(eventEditComponent, pointComponent);
-    };
-
-    const replaceFormToPoint = () => {
-      replace(pointComponent, eventEditComponent);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        replaceFormToPoint();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
-
-    pointComponent.setClickHandler(() => {
-      replacePointToForm();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    eventEditComponent.setFormSubmitHandler((evt) => {
-      evt.preventDefault();
-      replaceFormToPoint();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    eventEditComponent.setFormClickHandler(() => {
-      replaceFormToPoint();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    render(this._eventListComponent, pointComponent, RenderPosition.BEFOREEND);
-
+  _clearTripList() {
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._pointPresenter = {};
+    this._renderedPointCount = TASK_COUNT_PER_STEP;
+    remove(this._loadMoreButtonComponent);
   }
 
   _renderTrips() {
