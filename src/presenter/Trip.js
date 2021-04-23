@@ -28,6 +28,7 @@ export default class Trip {
 
     this._handlePointChange = this._handlePointChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(tripPoints) {
@@ -35,6 +36,12 @@ export default class Trip {
     // Метод для инициализации (начала работы) модуля,
     // малая часть текущей функции renderBoard в main.js
     this._renderBoard();
+  }
+
+  _handleSortTypeChange(sortType) {
+    // - Сортируем задачи
+    // - Очищаем список
+    // - Рендерим список заново
   }
 
   _handleModeChange() {
@@ -56,6 +63,7 @@ export default class Trip {
   _renderSort() {
     // Метод для рендеринга сортировки
     render(this._tripContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderFilter() {
