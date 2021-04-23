@@ -1,5 +1,5 @@
 import { generatePoints } from './mock/point.js';
-import TripPresenter from './presenter/Trip.js';
+import TripPresenter from './presenter/trip.js';
 
 const tripMain = document.querySelector('.trip-main');
 const navigation = tripMain.querySelector('.trip-controls__navigation');
