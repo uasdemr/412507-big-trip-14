@@ -69,3 +69,32 @@ export const timeMakerDayJs = (point) => {
   return dates;
 };
 
+const getWeightForNullDate = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+export const sortTimeDown = (pointA, pointB) => {
+  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateTo);
+
+  if (weight !== null) {
+    return weight;
+  }
+
+  return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateTo));
+};
+
+export const sortPriceDown = (pointA, pointB) => {
+  return pointA.basePrice - pointB.basePrice;
+};

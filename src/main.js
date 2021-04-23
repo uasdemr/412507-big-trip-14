@@ -9,7 +9,6 @@ const tripEvents = document.querySelector('.trip-events');
 const LIST_COUNT = 20;
 const points = generatePoints(LIST_COUNT);
 
-
 const tripPresenter = new TripPresenter (tripEvents, tripMain, navigation, filter);
 
 tripPresenter.init(points);
