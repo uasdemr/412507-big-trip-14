@@ -78,7 +78,7 @@ export default class Trip {
   }
 
   _renderRouteAndCost() {
-    this._routeAndCostComponent = new RouteAndCostView(this._tripPoints[0]);
+    this._routeAndCostComponent = new RouteAndCostView(this._tripPoints);
     render(this._tripMainElement, this._routeAndCostComponent, RenderPosition.AFTERBEGIN);
   }
   _renderSort() {

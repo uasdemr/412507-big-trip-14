@@ -92,7 +92,7 @@ export const sortTimeDown = (pointA, pointB) => {
     return weight;
   }
 
-  return dayjs(pointA.dateFrom).diff(dayjs(pointB.dateTo));
+  return dayjs(pointB.dateTo).diff(dayjs(pointA.dateFrom));
 };
 
 export const sortPriceDown = (pointA, pointB) => {
