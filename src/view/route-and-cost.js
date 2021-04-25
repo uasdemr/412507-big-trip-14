@@ -1,16 +1,11 @@
 import AbstractView from './abstract.js';
 
 const createRouteAndCostTemplate = (points) => {
-  const initialValue = 0;
-  // return offers.reduce((accumulator, currentValue) => accumulator + currentValue.price, initialValue);
+  const totalTripCost = points.reduce((acc1, point) => {
+    const offersCost = point.offers.reduce((acc2, offer) => acc2 + offer.price, 0);
+    return acc1 + point.basePrice + offersCost;
+  }, 0);
 
-  const mainTripCost = points.reduce((accumulator, currentValue) => accumulator + currentValue.basePrice, initialValue);
-  let offersTripCost = 0;
-  for(const point of points) {
-    offersTripCost = offersTripCost + point.offers.reduce((accumulator, currentValue) => accumulator + currentValue.price, initialValue);
-  }
-
-  const tripCost = mainTripCost + offersTripCost;
   return `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
@@ -19,21 +14,20 @@ const createRouteAndCostTemplate = (points) => {
     </div>
 
     <p class="trip-info__cost">
-      Total: &euro;&nbsp;<span class="trip-info__cost-value">${tripCost}</span>
+      Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalTripCost}</span>
     </p>
   </section>`;
 };
 
 
 export default class RouteAndCost extends AbstractView {
-  constructor(point, points) {
+  constructor(points) {
     super();
-    this._point = point;
     this._points = points;
     this._element = null;
   }
 
   getTemplate() {
-    return createRouteAndCostTemplate(this._point, this._points);
+    return createRouteAndCostTemplate(this._points);
   }
 }
