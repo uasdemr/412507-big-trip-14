@@ -1,4 +1,4 @@
-import { render, RenderPosition, remove } from '../utils/render.js';
+import { render, RenderPosition } from '../utils/render.js';
 import {updateItem} from '../utils/common.js';
 import RouteAndCostView from '../view/route-and-cost.js';
 import SiteMenuView from '../view/site-menu.js';
@@ -8,6 +8,9 @@ import eventListView from '../view/list-view.js';
 import NoPointView from '../view/no-point.js';
 import PointPresenter from './point.js';
 
+import {SortType} from '../view/const.js';
+import {sortTimeDown, sortPriceDown} from '../utils/point.js';
+
 export default class Trip {
   constructor(tripContainer, tripMainElement, navigationElement, filterElement) {
     this._tripContainer = tripContainer;
@@ -15,7 +18,7 @@ export default class Trip {
     this._navigationElement = navigationElement;
     this._filterElement = filterElement;
     this._pointPresenter = {};
-
+    this._currentSortType = SortType.DEFAULT;
 
     this._siteMenuComponent = new SiteMenuView();
     this._sortComponent = new SortView();
@@ -24,11 +27,27 @@ export default class Trip {
 
     this._handlePointChange = this._handlePointChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
   init(tripPoints) {
     this._tripPoints = tripPoints.slice();
+    this._sourcedTripPoints = tripPoints.slice();
+
     this._renderBoard();
+  }
+
+  _handleSortTypeChange(sortType) {
+    // - Сортируем задачи
+    if (this._currentSortType === sortType) {
+      return;
+    }
+
+    this._sortPoints(sortType);
+    this._clearTripList();
+    this._renderTrips();
+    // - Очищаем список
+    // - Рендерим список заново
   }
 
   _handleModeChange() {
@@ -39,15 +58,32 @@ export default class Trip {
 
   _handlePointChange(updatedPoint) {
     this._tripPoints = updateItem(this._tripPoints, updatedPoint);
+    this._sourcedTripPoints = updateItem(this._sourcedTripPoints, updatedPoint);
     this._pointPresenter[updatedPoint.id].init(updatedPoint);
   }
 
+  _sortPoints(sortType) {
+    switch (sortType) {
+      case SortType.TIME_DOWN:
+        this._tripPoints.sort(sortTimeDown);
+        break;
+      case SortType.PRICE_DOWN:
+        this._tripPoints.sort(sortPriceDown);
+        break;
+      default:
+        this._tripPoints = this._sourcedTripPoints.slice();
+    }
+
+    this._currentSortType = sortType;
+  }
+
   _renderRouteAndCost() {
-    this._routeAndCostComponent = new RouteAndCostView(this._tripPoints[0]);
+    this._routeAndCostComponent = new RouteAndCostView(this._tripPoints);
     render(this._tripMainElement, this._routeAndCostComponent, RenderPosition.AFTERBEGIN);
   }
   _renderSort() {
     render(this._tripContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderFilter() {
@@ -71,7 +107,7 @@ export default class Trip {
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.destroy());
     this._pointPresenter = {};
-    remove(this._loadMoreButtonComponent);
+    // remove(this._loadMoreButtonComponent);
   }
 
   _renderTrips() {

@@ -247,13 +247,25 @@ const generateOffers = (type) => {
   return getUniqueRandomItemsFromArray(offers.find((offer) => offer.type === type).offers);
 };
 
+let beginJourney = new Date('2020-01-10T08:53:00.845Z').getTime();
+const dateGenerator = () => {
+  const start = beginJourney + 22345678;
+  const end = start + getRandomInteger(1234567, 12345678);
+  beginJourney = beginJourney + 22345678;
+  return {
+    start,
+    end,
+  };
+};
 
 const generatePoint = (num) => {
   const typeGenerated = typeGenerator();
+  const date = dateGenerator();
+
   return {
     'basePrice': getRandomInteger(5, 2000),
-    'dateFrom': '2021-04-10T08:53:00.845Z',
-    'dateTo': '2021-05-13T10:03:00.375Z',
+    'dateFrom': date.start,
+    'dateTo': date.end,
     'destination': generateDestination(),
     'id': num,
     'isFavorite': Math.random() > 0.5,
