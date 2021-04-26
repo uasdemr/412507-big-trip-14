@@ -27,9 +27,14 @@ const createEventDestination = (destination) => {
   </section>`;
 };
 
-const createEditFormOffersItem = (point) => {
+const createEditFormOffersItem = (point, flag) => {
   return offers.find((it) => it.type === point.type).offers.map((offer, index) => {
-    const сhecked = point.offers.some((it) => it.title === offer.title);
+    let сhecked;
+    if(flag) {
+      сhecked = point.offers.some((it) => it.title === offer.title);
+    } else {
+      сhecked = '';
+    }
     return `<div class="event__offer-selector">
          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${point.type}-${index}" type="checkbox" ${сhecked ? 'checked' : ''}>
          <label class="event__offer-label" for="event-offer-${point.type}-${index}">
@@ -41,11 +46,12 @@ const createEditFormOffersItem = (point) => {
   }).join('');
 };
 
-const createEditFormOffers = (point) => {
-  return point.offers.length === 0 ? '' : `<section class="event__section  event__section--offers">
+const createEditFormOffers = (point, flag) => {
+  const isLength = point.offers.length === 0 ? 'visually-hidden' : '';
+  return `<section class="event__section  event__section--offers ${isLength}">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-      ${createEditFormOffersItem(point)}
+      ${createEditFormOffersItem(point, flag)}
     </div>
     </section>`;
 };
@@ -61,8 +67,8 @@ const createEventEditTemplate = (point) => {
   const eventTypeItem = () => {
     return Object.entries(EVENT_TYPES).map(([key, val]) => {
       return `<div class="event__type-item">
-        <input class="event__type-input  visually-hidden" type="radio" value="${key.toLowerCase()}">
-        <label class="event__type-label  event__type-label--${key.toLowerCase()}">${val}</label>
+        <input id="event-type-${key}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${key}">
+        <label class="event__type-label event__type-label--${key}" for="event-type-${key}">${val}</label>
       </div>`;
     }).join('');
   };
@@ -117,7 +123,7 @@ const createEventEditTemplate = (point) => {
         </button>
       </header>
       <section class="event__details">
-        ${createEditFormOffers(point)}
+        ${createEditFormOffers(point, true)}
         ${createEventDestination(point.destination)}
       </section>
     </form>
@@ -128,13 +134,11 @@ export default class EventEdit extends AbstractView {
   constructor(point) {
     super();
     this._data = EventEdit.parsePointToData(point);
-    console.log(this._data);
     this._element = null;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formBtnCloseClickHandler = this._formBtnCloseClickHandler.bind(this);
     this._eventTypeClickHandler = this._eventTypeClickHandler.bind(this);
-
-    this.getElement().querySelector('.event__type-input').addEventListener('change', this._eventTypeClickHandler);
+    this.getElement().querySelectorAll('.event__type-input').forEach(e => e.addEventListener('change', this._eventTypeClickHandler));
     // console.log(this.getElement().querySelector('.event__type-input'));
   }
 
@@ -152,8 +156,6 @@ export default class EventEdit extends AbstractView {
       this._data,
       update,
     );
-
-    this.updateElement();
   }
 
   updateElement() {
@@ -171,7 +173,10 @@ export default class EventEdit extends AbstractView {
     this.updateData({
       type: evt.target.value
     });
-    console.log(evt.target.value);
+    console.log(this.getElement().querySelector('.event__section--offers').classList);
+    this.getElement().querySelector('.event__section--offers').classList.remove('visually-hidden');
+    console.log(this._data);
+    this.updateElement()
   }
 
   _formSubmitHandler(evt) {
