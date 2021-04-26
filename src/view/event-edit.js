@@ -27,14 +27,9 @@ const createEventDestination = (destination) => {
   </section>`;
 };
 
-const createEditFormOffersItem = (point, flag) => {
-  return offers.find((it) => it.type === point.type).offers.map((offer, index) => {
-    let сhecked;
-    if(flag) {
-      сhecked = point.offers.some((it) => it.title === offer.title);
-    } else {
-      сhecked = '';
-    }
+const createEditFormOffersItem = (allOffers, point) => {
+  return allOffers.map((offer, index) => {
+    const сhecked = point.offers.some((it) => it.title === offer.title);
     return `<div class="event__offer-selector">
          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${point.type}-${index}" type="checkbox" ${сhecked ? 'checked' : ''}>
          <label class="event__offer-label" for="event-offer-${point.type}-${index}">
@@ -46,12 +41,13 @@ const createEditFormOffersItem = (point, flag) => {
   }).join('');
 };
 
-const createEditFormOffers = (point, flag) => {
-  const isLength = point.offers.length === 0 ? 'visually-hidden' : '';
+const createEditFormOffers = (point) => {
+  const allOffers = offers.find((it) => it.type === point.type).offers;
+  const isLength = allOffers.length === 0 ? 'visually-hidden' : '';
   return `<section class="event__section  event__section--offers ${isLength}">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-      ${createEditFormOffersItem(point, flag)}
+      ${createEditFormOffersItem(allOffers, point)}
     </div>
     </section>`;
 };
@@ -123,7 +119,7 @@ const createEventEditTemplate = (point) => {
         </button>
       </header>
       <section class="event__details">
-        ${createEditFormOffers(point, true)}
+        ${createEditFormOffers(point)}
         ${createEventDestination(point.destination)}
       </section>
     </form>
@@ -174,7 +170,6 @@ export default class EventEdit extends AbstractView {
       type: evt.target.value
     });
     console.log(this.getElement().querySelector('.event__section--offers').classList);
-    this.getElement().querySelector('.event__section--offers').classList.remove('visually-hidden');
     console.log(this._data);
     this.updateElement()
   }
