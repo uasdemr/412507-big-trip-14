@@ -1,5 +1,5 @@
 import { timeMakerDayJs } from '../utils/point.js';
-import { offers } from '../mock/point.js';
+import { offers, destinations } from '../mock/point.js';
 import { EVENT_TYPES } from './const.js';
 import AbstractView from './abstract.js';
 
@@ -32,7 +32,7 @@ const createEditFormOffersItem = (point) => {
     const сhecked = point.offers.some((it) => it.title === offer.title);
     return `<div class="event__offer-selector">
          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${point.type}-${index}" type="checkbox" ${сhecked ? 'checked' : ''}>
-         <label class="event__offer-label for="event-offer-${point.type}-${index}">
+         <label class="event__offer-label" for="event-offer-${point.type}-${index}">
            <span class="event__offer-title">${offer.title}</span>
            &plus;&euro;&nbsp;
            <span class="event__offer-price">${offer.price}</span>
@@ -42,7 +42,7 @@ const createEditFormOffersItem = (point) => {
 };
 
 const createEditFormOffers = (point) => {
-  return `<section class="event__section  event__section--offers">
+  return point.offers.length === 0 ? '' : `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
       ${createEditFormOffersItem(point)}
@@ -50,6 +50,11 @@ const createEditFormOffers = (point) => {
     </section>`;
 };
 
+const createPointDestinationList = () => {
+  return destinations.map((item) => {
+    return `<option value="${item.name}"></option>`
+  }).join('');
+}
 
 const createEventEditTemplate = (point) => {
   const dates = timeMakerDayJs(point);
@@ -85,9 +90,7 @@ const createEventEditTemplate = (point) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${point.destination.name}" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            ${createPointDestinationList()}
           </datalist>
         </div>
 
@@ -121,22 +124,59 @@ const createEventEditTemplate = (point) => {
   </li>`;
 };
 
-export default class EventEdit extends AbstractView{
+export default class EventEdit extends AbstractView {
   constructor(point) {
     super();
-    this._point = point;
+    this._data = EventEdit.parsePointToData(point);
+    console.log(this._data);
     this._element = null;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formBtnCloseClickHandler = this._formBtnCloseClickHandler.bind(this);
+    this._eventTypeClickHandler = this._eventTypeClickHandler.bind(this);
+
+    this.getElement().querySelector('.event__type-input').addEventListener('change', this._eventTypeClickHandler);
+    // console.log(this.getElement().querySelector('.event__type-input'));
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._point);
+    return createEventEditTemplate(this._data);
+  }
+
+  updateData(update) {
+    if (!update) {
+      return;
+    }
+
+    this._data = Object.assign(
+      {},
+      this._data,
+      update,
+    );
+
+    this.updateElement();
+  }
+
+  updateElement() {
+    const prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+
+    parent.replaceChild(newElement, prevElement);
+  }
+
+  // Написать два метода обработчика, один для типа точки, второй для пункта назначения
+  _eventTypeClickHandler(evt) {
+    this.updateData({
+      type: evt.target.value
+    });
+    console.log(evt.target.value);
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit(this._point);
+    this._callback.formSubmit(EventEdit.parseDataToPoint(this._data));
   }
 
   _formBtnCloseClickHandler(evt) {
@@ -151,5 +191,13 @@ export default class EventEdit extends AbstractView{
   setFormClickHandler(callback) {
     this._callback.formCloseClick = callback;
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formBtnCloseClickHandler);
+  }
+
+  static parsePointToData(task) {
+    return Object.assign({}, task);
+  }
+
+  static parseDataToPoint(data) {
+    return Object.assign({}, data);
   }
 }
