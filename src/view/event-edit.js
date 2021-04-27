@@ -3,8 +3,8 @@ import { offers, destinations } from '../mock/point.js';
 import { EVENT_TYPES } from './const.js';
 import AbstractView from './abstract.js';
 
-const createEventDestination = (destination) => {
-
+const createEventDestination = (point) => {
+  console.log(point);
   const imgCreator = (pictures) => {
 
     return pictures.map((picture) => {
@@ -14,6 +14,9 @@ const createEventDestination = (destination) => {
       >`;
     }).join('');
   };
+
+  const destination = destinations.find((it) => it.name === point.destination.name);
+  console.log(destination);
 
   return destination.description === '' ? '' : `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -54,7 +57,7 @@ const createEditFormOffers = (point) => {
 
 const createPointDestinationList = () => {
   return destinations.map((item) => {
-    return `<option value="${item.name}"></option>`
+    return `<option value="${item.name}">${item.name}</option>`
   }).join('');
 }
 
@@ -120,7 +123,7 @@ const createEventEditTemplate = (point) => {
       </header>
       <section class="event__details">
         ${createEditFormOffers(point)}
-        ${createEventDestination(point.destination)}
+        ${createEventDestination(point)}
       </section>
     </form>
   </li>`;
@@ -133,9 +136,11 @@ export default class EventEdit extends AbstractView {
     this._element = null;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formBtnCloseClickHandler = this._formBtnCloseClickHandler.bind(this);
-    this._eventTypeClickHandler = this._eventTypeClickHandler.bind(this);
-    this.getElement().querySelectorAll('.event__type-input').forEach(e => e.addEventListener('change', this._eventTypeClickHandler));
-    // console.log(this.getElement().querySelector('.event__type-input'));
+
+    this._eventEditTypeChangeHandler = this._eventEditTypeChangeHandler.bind(this);
+    this._eventEditDestinationChangeHandler = this._eventEditDestinationChangeHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
@@ -151,7 +156,7 @@ export default class EventEdit extends AbstractView {
       {},
       this._data,
       update,
-    );
+      );
   }
 
   updateElement() {
@@ -162,21 +167,39 @@ export default class EventEdit extends AbstractView {
     const newElement = this.getElement();
 
     parent.replaceChild(newElement, prevElement);
+    this.restoreHandlers();
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelectorAll('.event__type-input').forEach(e => e.addEventListener('change', this._eventEditTypeChangeHandler));
+    this.getElement().querySelector('.event__input').addEventListener('change', this._eventEditDestinationChangeHandler);
   }
 
   // Написать два метода обработчика, один для типа точки, второй для пункта назначения
-  _eventTypeClickHandler(evt) {
+  _eventEditTypeChangeHandler(evt) {
     this.updateData({
       type: evt.target.value
     });
-    console.log(this.getElement().querySelector('.event__section--offers').classList);
+    this.updateElement();
+  }
+
+  _eventEditDestinationChangeHandler(evt) {
+    this.updateData({
+      name: evt.target.value
+    });
+    this.updateElement();
     console.log(this._data);
-    this.updateElement()
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.formSubmit(EventEdit.parseDataToPoint(this._data));
+    // this.updateElement();
   }
 
   _formBtnCloseClickHandler(evt) {
