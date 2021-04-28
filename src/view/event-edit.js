@@ -141,6 +141,11 @@ export default class EventEdit extends SmartView {
     this._setInnerHandlers();
   }
 
+  reset(point) {
+    this.updateData(
+      EventEdit.parsePointToData(point));
+  }
+
   getTemplate() {
     return createEventEditTemplate(this._data);
   }
