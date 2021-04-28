@@ -173,7 +173,6 @@ export default class EventEdit extends SmartView {
     this.updateData({
       destination: {name: evt.target.value},
     });
-    this.updateElement();
   }
 
   _formSubmitHandler(evt) {
