@@ -166,7 +166,6 @@ export default class EventEdit extends SmartView {
     this.updateData({
       type: evt.target.value,
     });
-    this.updateElement();
   }
 
   _eventEditDestinationChangeHandler(evt) {
