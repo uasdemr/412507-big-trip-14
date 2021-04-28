@@ -1,4 +1,4 @@
-import { EVENT_TYPES, DESTINATION } from '../view/const.js';
+import { EVENT_TYPES } from '../view/const.js';
 import { getRandomInteger } from '../utils/common';
 
 const typeGenerator = () => {

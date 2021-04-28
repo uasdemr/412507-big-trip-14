@@ -1,10 +1,9 @@
 import { timeMakerDayJs } from '../utils/point.js';
 import { offers, destinations } from '../mock/point.js';
 import { EVENT_TYPES } from './const.js';
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 
 const createEventDestination = (point) => {
-  console.log(point);
   const imgCreator = (pictures) => {
 
     return pictures.map((picture) => {
@@ -16,7 +15,6 @@ const createEventDestination = (point) => {
   };
 
   const destination = destinations.find((it) => it.name === point.destination.name);
-  console.log(destination);
 
   return destination.description === '' ? '' : `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -57,9 +55,9 @@ const createEditFormOffers = (point) => {
 
 const createPointDestinationList = () => {
   return destinations.map((item) => {
-    return `<option value="${item.name}">${item.name}</option>`
+    return `<option value="${item.name}">${item.name}</option>`;
   }).join('');
-}
+};
 
 const createEventEditTemplate = (point) => {
   const dates = timeMakerDayJs(point);
@@ -129,7 +127,7 @@ const createEventEditTemplate = (point) => {
   </li>`;
 };
 
-export default class EventEdit extends AbstractView {
+export default class EventEdit extends SmartView {
   constructor(point) {
     super();
     this._data = EventEdit.parsePointToData(point);
@@ -147,59 +145,35 @@ export default class EventEdit extends AbstractView {
     return createEventEditTemplate(this._data);
   }
 
-  updateData(update) {
-    if (!update) {
-      return;
-    }
-
-    this._data = Object.assign(
-      {},
-      this._data,
-      update,
-      );
-  }
-
-  updateElement() {
-    const prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-
-    parent.replaceChild(newElement, prevElement);
-    this.restoreHandlers();
-  }
-
   restoreHandlers() {
     this._setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setFormClickHandler(this._callback.formCloseClick);
   }
 
   _setInnerHandlers() {
-    this.getElement().querySelectorAll('.event__type-input').forEach(e => e.addEventListener('change', this._eventEditTypeChangeHandler));
+    this.getElement().querySelectorAll('.event__type-input').forEach((e) => e.addEventListener('change', this._eventEditTypeChangeHandler));
     this.getElement().querySelector('.event__input').addEventListener('change', this._eventEditDestinationChangeHandler);
   }
 
   // Написать два метода обработчика, один для типа точки, второй для пункта назначения
   _eventEditTypeChangeHandler(evt) {
     this.updateData({
-      type: evt.target.value
+      type: evt.target.value,
     });
     this.updateElement();
   }
 
   _eventEditDestinationChangeHandler(evt) {
     this.updateData({
-      name: evt.target.value
+      destination: {name: evt.target.value},
     });
     this.updateElement();
-    console.log(this._data);
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
     this._callback.formSubmit(EventEdit.parseDataToPoint(this._data));
-    // this.updateElement();
   }
 
   _formBtnCloseClickHandler(evt) {
