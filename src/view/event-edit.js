@@ -1,10 +1,9 @@
 import { timeMakerDayJs } from '../utils/point.js';
-import { offers } from '../mock/point.js';
+import { offers, destinations } from '../mock/point.js';
 import { EVENT_TYPES } from './const.js';
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 
-const createEventDestination = (destination) => {
-
+const createEventDestination = (point) => {
   const imgCreator = (pictures) => {
 
     return pictures.map((picture) => {
@@ -14,6 +13,8 @@ const createEventDestination = (destination) => {
       >`;
     }).join('');
   };
+
+  const destination = destinations.find((it) => it.name === point.destination.name);
 
   return destination.description === '' ? '' : `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -27,12 +28,12 @@ const createEventDestination = (destination) => {
   </section>`;
 };
 
-const createEditFormOffersItem = (point) => {
-  return offers.find((it) => it.type === point.type).offers.map((offer, index) => {
-    const сhecked = point.offers.some((it) => it.title === offer.title);
+const createEditFormOffersItem = (allOffers, point) => {
+  return allOffers.map((offer, index) => {
+    const checked = point.offers.some((it) => it.title === offer.title);
     return `<div class="event__offer-selector">
-         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${point.type}-${index}" type="checkbox" ${сhecked ? 'checked' : ''}>
-         <label class="event__offer-label for="event-offer-${point.type}-${index}">
+         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${point.type}-${index}" type="checkbox" ${checked ? 'checked' : ''}>
+         <label class="event__offer-label" for="event-offer-${point.type}-${index}">
            <span class="event__offer-title">${offer.title}</span>
            &plus;&euro;&nbsp;
            <span class="event__offer-price">${offer.price}</span>
@@ -42,22 +43,30 @@ const createEditFormOffersItem = (point) => {
 };
 
 const createEditFormOffers = (point) => {
-  return `<section class="event__section  event__section--offers">
+  const allOffers = offers.find((it) => it.type === point.type).offers;
+  const isLength = allOffers.length === 0 ? 'visually-hidden' : '';
+  return `<section class="event__section  event__section--offers ${isLength}">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">
-      ${createEditFormOffersItem(point)}
+      ${createEditFormOffersItem(allOffers, point)}
     </div>
     </section>`;
 };
 
+const createPointDestinationList = () => {
+  return destinations.map((item) => {
+    return `<option value="${item.name}">${item.name}</option>`;
+  }).join('');
+};
 
 const createEventEditTemplate = (point) => {
   const dates = timeMakerDayJs(point);
   const eventTypeItem = () => {
     return Object.entries(EVENT_TYPES).map(([key, val]) => {
+      const checked = point.type === key;
       return `<div class="event__type-item">
-        <input class="event__type-input  visually-hidden" type="radio" value="${key.toLowerCase()}">
-        <label class="event__type-label  event__type-label--${key.toLowerCase()}">${val}</label>
+        <input id="event-type-${key}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${key}" ${checked ? 'checked' : ''}>
+        <label class="event__type-label event__type-label--${key}" for="event-type-${key}">${val}</label>
       </div>`;
     }).join('');
   };
@@ -85,9 +94,7 @@ const createEventEditTemplate = (point) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${point.destination.name}" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            ${createPointDestinationList()}
           </datalist>
         </div>
 
@@ -115,28 +122,62 @@ const createEventEditTemplate = (point) => {
       </header>
       <section class="event__details">
         ${createEditFormOffers(point)}
-        ${createEventDestination(point.destination)}
+        ${createEventDestination(point)}
       </section>
     </form>
   </li>`;
 };
 
-export default class EventEdit extends AbstractView{
+export default class EventEdit extends SmartView {
   constructor(point) {
     super();
-    this._point = point;
+    this._data = EventEdit.parsePointToData(point);
     this._element = null;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formBtnCloseClickHandler = this._formBtnCloseClickHandler.bind(this);
+
+    this._eventEditTypeChangeHandler = this._eventEditTypeChangeHandler.bind(this);
+    this._eventEditDestinationChangeHandler = this._eventEditDestinationChangeHandler.bind(this);
+
+    this._setInnerHandlers();
+  }
+
+  reset(point) {
+    this.updateData(
+      EventEdit.parsePointToData(point));
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._point);
+    return createEventEditTemplate(this._data);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setFormClickHandler(this._callback.formCloseClick);
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelectorAll('.event__type-input').forEach((e) => e.addEventListener('change', this._eventEditTypeChangeHandler));
+    this.getElement().querySelector('.event__input').addEventListener('change', this._eventEditDestinationChangeHandler);
+  }
+
+  // Написать два метода обработчика, один для типа точки, второй для пункта назначения
+  _eventEditTypeChangeHandler(evt) {
+    this.updateData({
+      type: evt.target.value,
+    });
+  }
+
+  _eventEditDestinationChangeHandler(evt) {
+    this.updateData({
+      destination: {name: evt.target.value},
+    });
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit(this._point);
+    this._callback.formSubmit(EventEdit.parseDataToPoint(this._data));
   }
 
   _formBtnCloseClickHandler(evt) {
@@ -151,5 +192,13 @@ export default class EventEdit extends AbstractView{
   setFormClickHandler(callback) {
     this._callback.formCloseClick = callback;
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formBtnCloseClickHandler);
+  }
+
+  static parsePointToData(task) {
+    return Object.assign({}, task);
+  }
+
+  static parseDataToPoint(data) {
+    return Object.assign({}, data);
   }
 }
