@@ -205,12 +205,12 @@ export default class EventEdit extends SmartView {
 
   _dateFromChangeHandler([userDate]) {
     this.updateData({
-      dataFrom: userDate,
+      dateFrom: userDate,
     });
   }
   _dateToChangeHandler([userDate]) {
     this.updateData({
-      dataTo: userDate,
+      dateTo: userDate,
     });
   }
 
