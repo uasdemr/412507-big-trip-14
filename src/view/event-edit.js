@@ -30,9 +30,9 @@ const createEventDestination = (point) => {
 
 const createEditFormOffersItem = (allOffers, point) => {
   return allOffers.map((offer, index) => {
-    const сhecked = point.offers.some((it) => it.title === offer.title);
+    const checked = point.offers.some((it) => it.title === offer.title);
     return `<div class="event__offer-selector">
-         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${point.type}-${index}" type="checkbox" ${сhecked ? 'checked' : ''}>
+         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${point.type}-${index}" type="checkbox" ${checked ? 'checked' : ''}>
          <label class="event__offer-label" for="event-offer-${point.type}-${index}">
            <span class="event__offer-title">${offer.title}</span>
            &plus;&euro;&nbsp;
@@ -63,8 +63,9 @@ const createEventEditTemplate = (point) => {
   const dates = timeMakerDayJs(point);
   const eventTypeItem = () => {
     return Object.entries(EVENT_TYPES).map(([key, val]) => {
+      const checked = point.type === key;
       return `<div class="event__type-item">
-        <input id="event-type-${key}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${key}">
+        <input id="event-type-${key}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${key}" ${checked ? 'checked' : ''}>
         <label class="event__type-label event__type-label--${key}" for="event-type-${key}">${val}</label>
       </div>`;
     }).join('');
