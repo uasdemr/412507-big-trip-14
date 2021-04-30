@@ -12,7 +12,8 @@ import {SortType} from '../view/const.js';
 import {sortTimeDown, sortPriceDown} from '../utils/point.js';
 
 export default class Trip {
-  constructor(tripContainer, tripMainElement, navigationElement, filterElement) {
+  constructor(tripContainer, tripMainElement, navigationElement, filterElement, pointsModel) {
+    this._pointsModel = pointsModel;
     this._tripContainer = tripContainer;
     this._tripMainElement = tripMainElement;
     this._navigationElement = navigationElement;
@@ -35,6 +36,10 @@ export default class Trip {
     this._sourcedTripPoints = tripPoints.slice();
 
     this._renderBoard();
+  }
+
+  _getPoints() {
+    return this._tasksModel.getPoints();
   }
 
   _handleSortTypeChange(sortType) {

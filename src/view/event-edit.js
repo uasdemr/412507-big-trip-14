@@ -207,9 +207,12 @@ export default class EventEdit extends SmartView {
     const dates = {
       dateFrom: userDate,
     };
-    if(this._datepickerTo.selectedDates[0] < userDate)
-      this.updateData({dates});
+    if (this._datepickerTo.selectedDates[0] < userDate) {
+      dates.dateTo = userDate;
+    }
+    this.updateData(dates);
   }
+
   _dateToChangeHandler([userDate]) {
     this.updateData({
       dateTo: userDate,
