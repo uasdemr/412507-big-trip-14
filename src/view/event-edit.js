@@ -2,6 +2,9 @@ import { timeMakerDayJs } from '../utils/point.js';
 import { offers, destinations } from '../mock/point.js';
 import { EVENT_TYPES } from './const.js';
 import SmartView from './smart.js';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const createEventDestination = (point) => {
   const imgCreator = (pictures) => {
@@ -133,13 +136,20 @@ export default class EventEdit extends SmartView {
     super();
     this._data = EventEdit.parsePointToData(point);
     this._element = null;
+    this._datepickerFrom = null;
+    this._datepickerTo = null;
+
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formBtnCloseClickHandler = this._formBtnCloseClickHandler.bind(this);
 
     this._eventEditTypeChangeHandler = this._eventEditTypeChangeHandler.bind(this);
     this._eventEditDestinationChangeHandler = this._eventEditDestinationChangeHandler.bind(this);
 
+    this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
+    this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
     this._setInnerHandlers();
+    this._setDatepickerFrom();
+    this._setDatepickerTo();
   }
 
   reset(point) {
@@ -153,8 +163,57 @@ export default class EventEdit extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setDatepickerFrom();
+    this._setDatepickerTo();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setFormClickHandler(this._callback.formCloseClick);
+  }
+
+  _setDatepickerFrom() {
+    if (this._datepickerFrom) {
+      this._datepickerFrom.destroy();
+      this._datepickerFrom = null;
+    }
+
+    this._datepickerFrom = flatpickr(
+      this.getElement().querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        time_24hr: true,
+        defaultDate: this._data.dataFrom,
+        onChange: this._dateFromChangeHandler,
+      });
+  }
+  _setDatepickerTo() {
+    if (this._datepickerTo) {
+      this._datepickerTo.destroy();
+      this._datepickerTo = null;
+    }
+
+    this._datepickerTo = flatpickr(
+      this.getElement().querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        time_24hr: true,
+        minDate: this._data.dateFrom,
+        defaultDate: this._data.dataTo,
+        onChange: this._dateToChangeHandler,
+      });
+  }
+
+  _dateFromChangeHandler([userDate]) {
+    const dates = {
+      dateFrom: userDate,
+    };
+    if(this._datepickerTo.selectedDates[0] < userDate)
+      this.updateData({dates});
+  }
+  _dateToChangeHandler([userDate]) {
+    this.updateData({
+      dateTo: userDate,
+    });
   }
 
   _setInnerHandlers() {
@@ -162,7 +221,6 @@ export default class EventEdit extends SmartView {
     this.getElement().querySelector('.event__input').addEventListener('change', this._eventEditDestinationChangeHandler);
   }
 
-  // Написать два метода обработчика, один для типа точки, второй для пункта назначения
   _eventEditTypeChangeHandler(evt) {
     this.updateData({
       type: evt.target.value,
@@ -171,7 +229,7 @@ export default class EventEdit extends SmartView {
 
   _eventEditDestinationChangeHandler(evt) {
     this.updateData({
-      destination: {name: evt.target.value},
+      destination: { name: evt.target.value },
     });
   }
 
