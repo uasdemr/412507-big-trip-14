@@ -16,4 +16,5 @@ pointsModel.setPoints(points);
 
 const tripPresenter = new TripPresenter (tripEvents, tripMain, navigation, filter, pointsModel);
 
-tripPresenter.init(points);
+// tripPresenter.init(points);
+tripPresenter.init();
