@@ -54,7 +54,7 @@ export default class Trip {
   }
 
   _handleSortTypeChange(sortType) {
-    console.log(sortType);
+    console.log(this._currentSortType, sortType);
     // - Сортируем задачи
     if (this._currentSortType === sortType) {
       return;
@@ -62,7 +62,7 @@ export default class Trip {
 
     // this._sortPoints(sortType);
     this._currentSortType = sortType;
-    this._clearTripList();
+    this._clearTrip();
     this._renderTrips(this._pointsModel.getPoints());
     // - Очищаем список
     // - Рендерим список заново
@@ -81,15 +81,16 @@ export default class Trip {
   // }
 
   _handleViewAction(actionType, updateType, update) {
+    console.log(actionType);
     switch (actionType) {
       case UserAction.UPDATE_POINT:
         this._pointsModel.updatePoint(updateType, update);
         break;
       case UserAction.ADD_POINT:
-        this._pointsModel.addTask(updateType, update);
+        this._pointsModel.addPoint(updateType, update);
         break;
       case UserAction.DELETE_POINT:
-        this._pointsModel.deleteTask(updateType, update);
+        this._pointsModel.deletePoint(updateType, update);
         break;
     }
   }
@@ -107,8 +108,8 @@ export default class Trip {
         break;
       case UpdateType.MINOR:
         // - обновить список (например, когда задача ушла в архив)
-        this._clearTripList();
-        this._renderBoard();
+        this._clearTrip();
+        this._renderTrips(this._pointsModel.getPoints());
         break;
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
@@ -187,7 +188,14 @@ export default class Trip {
     this._renderFilter();
   }
 
-  _clearTripList({resetSortType = false} = {}) {
+  _clearTrip() {
+    Object
+      .values(this._pointPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._pointPresenter = {};
+  }
+
+  _clearBoard({resetSortType = false} = {}) {
     Object
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.destroy());
