@@ -46,9 +46,9 @@ export default class Trip {
   _getPoints() {
     switch (this._currentSortType) {
       case SortType.TIME_DOWN:
-        return this._pointsModel.getTasks().slice().sort(sortTimeDown);
+        return this._pointsModel.getPoints().slice().sort(sortTimeDown);
       case SortType.PRICE_DOWN:
-        return this._tasksModel.getTasks().slice().sort(sortPriceDown);
+        return this._pointsModel.getPoints().slice().sort(sortPriceDown);
     }
     return this._pointsModel.getPoints();
   }
@@ -63,7 +63,7 @@ export default class Trip {
     // this._sortPoints(sortType);
     this._currentSortType = sortType;
     this._clearTrip();
-    this._renderTrips(this._pointsModel.getPoints());
+    this._renderTrips(this._getPoints());
     // - Очищаем список
     // - Рендерим список заново
   }
@@ -81,7 +81,6 @@ export default class Trip {
   // }
 
   _handleViewAction(actionType, updateType, update) {
-    console.log(actionType);
     switch (actionType) {
       case UserAction.UPDATE_POINT:
         this._pointsModel.updatePoint(updateType, update);
@@ -96,7 +95,6 @@ export default class Trip {
   }
 
   _handleModelEvent(updateType, data) {
-    console.log(updateType, data);
     // В зависимости от типа изменений решаем, что делать:
     // - обновить часть списка (например, когда поменялось описание)
     // - обновить список (например, когда задача ушла в архив)
@@ -109,7 +107,7 @@ export default class Trip {
       case UpdateType.MINOR:
         // - обновить список (например, когда задача ушла в архив)
         this._clearTrip();
-        this._renderTrips(this._pointsModel.getPoints());
+        this._renderTrips(this._getPoints());
         break;
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
@@ -183,7 +181,7 @@ export default class Trip {
     this._renderSort();
     this._renderRouteAndCost();
     render(this._tripContainer, this._eventListComponent, RenderPosition.BEFOREEND);
-    this._renderTrips(this._pointsModel.getPoints());
+    this._renderTrips(points);
     this._renderNavigation();
     this._renderFilter();
   }
@@ -201,7 +199,9 @@ export default class Trip {
       .forEach((presenter) => presenter.destroy());
     this._pointPresenter = {};
 
+    remove(this._routeAndCostComponent);
     remove(this._sortComponent);
+    remove(this._filterComponent);
     remove(this._noPointComponent);
 
     if (resetSortType) {

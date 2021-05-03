@@ -45,10 +45,10 @@ export default class Sort extends AbstractView {
   }
 
   _sortTypeChangeHandler(evt) {
-    console.log(evt.target.dataset.sortType);
     if (evt.target.tagName !== 'LABEL') {
       return;
     }
+    // console.log(evt.target.dataset.sortType);
 
     this._callback.sortTypeChange(evt.target.dataset.sortType);
   }

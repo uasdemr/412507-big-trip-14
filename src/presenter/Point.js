@@ -112,7 +112,7 @@ export default class Point {
   _handleFormSubmit(point) {
     this._changeData(
       UserAction.UPDATE_POINT,
-      UpdateType.MINOR,
+      UpdateType.MAJOR,
       point);
     this._replaceFormToPoint();
     document.removeEventListener('keydown', this._onEscKeyDown);
