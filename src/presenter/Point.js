@@ -117,8 +117,8 @@ export default class Point {
   //Изменение даты это MAJOR обновление
   //Сравнить даты из имеющегося this._point и пришедшего point
 
-  //Если обновилась дата, надо сделать перерисовку компонента фильтра
-  //Если обновился прайс, надо сделать перерисовку компонента route-and-cost
+  //Если обновилась дата, надо сделать перерисовку компонента фильтра и задач
+  //Если обновился прайс, надо сделать перерисовку компонента route-and-cost и задач
   _handleFormSubmit(point) {
     const isDateModify = isDateChange(this._point, point);
     const isPriceModify = isPriceChange(this._point, point);
