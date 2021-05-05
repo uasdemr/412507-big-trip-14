@@ -1,5 +1,6 @@
 import { EVENT_TYPES } from '../view/const.js';
 import { getRandomInteger } from '../utils/common';
+import dayjs from 'dayjs';
 
 const typeGenerator = () => {
   const types = Object.keys(EVENT_TYPES);
@@ -1055,8 +1056,8 @@ const generatePoint = (num) => {
 
   return {
     'basePrice': getRandomInteger(5, 2000),
-    'dateFrom': date.start,
-    'dateTo': date.end,
+    'dateFrom': dayjs(date.start).toISOString(),
+    'dateTo': dayjs(date.end).toISOString(),
     'destination': generateDestination2(),
     'id': num,
     'isFavorite': Math.random() > 0.5,

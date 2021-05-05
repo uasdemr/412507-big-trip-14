@@ -10,11 +10,9 @@ const tripEvents = document.querySelector('.trip-events');
 
 const LIST_COUNT = 20;
 const points = generatePoints(LIST_COUNT);
-
 const pointsModel = new PointsModel();
 pointsModel.setPoints(points);
 
 const tripPresenter = new TripPresenter (tripEvents, tripMain, navigation, filter, pointsModel);
 
-// tripPresenter.init(points);
 tripPresenter.init();

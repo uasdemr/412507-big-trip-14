@@ -1,5 +1,4 @@
 import { render, RenderPosition, remove } from '../utils/render.js';
-// import { updateItem } from '../utils/common.js';
 import RouteAndCostView from '../view/route-and-cost.js';
 import SiteMenuView from '../view/site-menu.js';
 import FilterView from '../view/filter.js';
@@ -22,7 +21,6 @@ export default class Trip {
     this._currentSortType = SortType.DEFAULT;
 
     this._siteMenuComponent = new SiteMenuView();
-    // this._sortComponent = new SortView();
     this._sortComponent = null;
     this._eventListComponent = new eventListView();
     this._noPointComponent = new NoPointView();
@@ -30,7 +28,6 @@ export default class Trip {
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
 
-    // this._handlePointChange = this._handlePointChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
@@ -38,8 +35,6 @@ export default class Trip {
   }
 
   init() {
-    // this._tripPoints = tripPoints.slice();
-    // this._sourcedTripPoints = tripPoints.slice();
     this._renderBoard();
   }
 
@@ -54,18 +49,13 @@ export default class Trip {
   }
 
   _handleSortTypeChange(sortType) {
-    console.log(this._currentSortType, sortType);
     // - Сортируем задачи
     if (this._currentSortType === sortType) {
       return;
     }
-
-    // this._sortPoints(sortType);
     this._currentSortType = sortType;
     this._clearTrip();
     this._renderTrips(this._getPoints());
-    // - Очищаем список
-    // - Рендерим список заново
   }
 
   _handleModeChange() {
@@ -73,12 +63,6 @@ export default class Trip {
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.resetView());
   }
-
-  // _handlePointChange(updatedPoint) {
-  //   // this._tripPoints = updateItem(this._tripPoints, updatedPoint);
-  //   // this._sourcedTripPoints = updateItem(this._sourcedTripPoints, updatedPoint);
-  //   this._pointPresenter[updatedPoint.id].init(updatedPoint);
-  // }
 
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
@@ -99,6 +83,7 @@ export default class Trip {
     // - обновить часть списка (например, когда поменялось описание)
     // - обновить список (например, когда задача ушла в архив)
     // - обновить всю доску (например, при переключении фильтра)
+    // debugger;
     switch (updateType) {
       case UpdateType.PATCH:
         // - обновить часть списка (например, когда поменялось описание)
@@ -107,30 +92,22 @@ export default class Trip {
       case UpdateType.MINOR:
         // - обновить список (например, когда задача ушла в архив)
         this._clearTrip();
+        remove(this._routeAndCostComponent);
+        this._renderRouteAndCost();
         this._renderTrips(this._getPoints());
         break;
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
-        this._clearBoard({resetSortType: true});
-        this._renderBoard();
+        // this._clearBoard({resetSortType: true});
+        // this._clearBoard();
+        // this._renderBoard();
+        this._clearTrip();
+        remove(this._filterComponent);
+        this._renderFilter();
+        this._renderTrips(this._getPoints());
         break;
     }
   }
-
-  // _sortPoints(sortType) {
-  //   switch (sortType) {
-  //     case SortType.TIME_DOWN:
-  //       this._tripPoints.sort(sortTimeDown);
-  //       break;
-  //     case SortType.PRICE_DOWN:
-  //       this._tripPoints.sort(sortPriceDown);
-  //       break;
-  //     default:
-  //       this._tripPoints = this._sourcedTripPoints.slice();
-  //   }
-
-  //   this._currentSortType = sortType;
-  // }
 
   _renderRouteAndCost() {
     this._routeAndCostComponent = new RouteAndCostView(this._pointsModel.getPoints());
@@ -155,7 +132,6 @@ export default class Trip {
   }
 
   _renderTrip(point) {
-    // const pointPresenter = new PointPresenter(this._eventListComponent, this._handlePointChange, this._handleModeChange);
     const pointPresenter = new PointPresenter(this._eventListComponent, this._handleViewAction, this._handleModeChange);
     pointPresenter.init(point);
     this._pointPresenter[point.id] = pointPresenter;
