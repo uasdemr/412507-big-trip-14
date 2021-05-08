@@ -99,6 +99,10 @@ export const sortPriceDown = (pointA, pointB) => {
   return pointA.basePrice - pointB.basePrice;
 };
 
+export const sortDefault = (pointA, pointB) => {
+  return dayjs(pointA.dateFrom).isAfter(dayjs(pointB.dateTo));
+};
+
 export const isDateChange = (oldPoint, changedPoint) => {
   return !(dayjs(oldPoint.dateFrom).isSame(changedPoint.dateFrom) && dayjs(oldPoint.dateTo).isSame(changedPoint.dateTo));
 };

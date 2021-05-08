@@ -123,11 +123,8 @@ export default class Point {
     const isDateModify = isDateChange(this._point, point);
     const isPriceModify = isPriceChange(this._point, point);
 
-    // const isMajorUpdate = isDateModify || isPriceModify;
-
     this._changeData(
       UserAction.UPDATE_POINT,
-      // isMajorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       isDateModify ? UpdateType.MAJOR : isPriceModify ? UpdateType.MINOR : UpdateType.PATCH,
       Object.assign(
         {},
