@@ -134,7 +134,6 @@ const createEventEditTemplate = (point) => {
 
 export default class EventEdit extends SmartView {
   constructor(point) {
-    console.log(point);
     super();
     this._data = EventEdit.parsePointToData(point);
     this._element = null;
