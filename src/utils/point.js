@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import duration from 'dayjs/plugin/duration';
 
+dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
 export const createEmptyPoint = () => {
@@ -40,8 +42,17 @@ export const isPast = (dateTo) => {
 export const timeMakerDayJs = (point) => {
   const dayjs1 = dayjs(point.dateFrom);
   const dayjs2 = dayjs(point.dateTo);
-  const diff = dayjs2.diff(dayjs1);
-  const diffDate = dayjs(diff);
+  const diffInMinutes = dayjs2.diff(dayjs1, 'minute');
+
+  const zeroPad = (num) => {
+    return String(num).padStart(2, 0);
+  };
+
+  const days = zeroPad(dayjs.duration(diffInMinutes, 'minutes').days());
+
+  const hours = zeroPad(dayjs.duration(diffInMinutes, 'minutes').hours());
+  const minutes = zeroPad(dayjs.duration(diffInMinutes, 'minutes').minutes());
+  const diffReturned = `${days}D ${hours}H ${minutes}M`;
 
   const eventStartTimeDateTime = dayjs1.format('YYYY-MM-DDTHH:mm');
   const eventEndTimeDateTime = dayjs2.format('YYYY-MM-DDTHH:mm');
@@ -49,8 +60,6 @@ export const timeMakerDayJs = (point) => {
   const startDate = dayjs1.format('MMM DD');
   const dateFromReturned = dayjs1.format('HH:mm');
   const dateToReturned = dayjs2.format('HH:mm');
-  const diffReturned = diffDate.format('DD[D] HH[H] mm[M]');
-
   const editFormFormatedData = {
     eventStartTimeDateTime: dayjs1.format('DD/MM/YY HH:mm'),
     eventEndTimeDateTime: dayjs2.format('DD/MM/YY HH:mm'),
