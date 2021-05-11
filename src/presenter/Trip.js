@@ -1,7 +1,9 @@
 import { render, RenderPosition, remove } from '../utils/render.js';
-import { SortType, UpdateType, UserAction } from '../view/const.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../view/const.js';
 import { sortTimeDown, sortPriceDown, sortDefault } from '../utils/point.js';
 import { filter } from '../utils/filter.js';
+import { EVENT_TYPES } from '../view/const.js';
+import {nanoid} from 'nanoid';
 
 import RouteAndCostView from '../view/route-and-cost.js';
 import SiteMenuView from '../view/site-menu.js';
@@ -9,6 +11,7 @@ import SortView from '../view/sort.js';
 import eventListView from '../view/list-view.js';
 import NoPointView from '../view/no-point.js';
 import PointPresenter from './point.js';
+import PointNewPresenter from './point-new.js';
 import FilterPresenter from '../presenter/filter.js';
 import FilterModel from '../model/filter-model.js';
 
@@ -40,10 +43,23 @@ export default class Trip {
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+
+    this._pointNewPresenter = new PointNewPresenter(this._eventListComponent, this._handleViewAction);
+
+    document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+      evt.preventDefault();
+      this.createPoint();
+    });
   }
 
   init() {
     this._renderBoard();
+  }
+
+  createPoint() {
+    this._currentSortType = SortType.DEFAULT;
+    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this._pointNewPresenter.init(this._createEmptyPoint());
   }
 
   _getPoints() {
@@ -62,6 +78,19 @@ export default class Trip {
     return filtredPoints;
   }
 
+  _createEmptyPoint() {
+    return {
+      basePrice: 0,
+      dateFrom: Date.now(),
+      dateTo: Date.now(),
+      destination: {name: 'Chamonix', description: '', pictures: []},
+      id: nanoid(),
+      isFavorite: false,
+      offers: [],
+      type: EVENT_TYPES.taxi.toLowerCase(),
+    };
+  }
+
   _handleSortTypeChange(sortType) {
     // - Сортируем задачи
     if (this._currentSortType === sortType) {
@@ -73,6 +102,7 @@ export default class Trip {
   }
 
   _handleModeChange() {
+    this._pointNewPresenter.destroy();
     Object
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.resetView());
@@ -169,6 +199,7 @@ export default class Trip {
   }
 
   _clearBoard({ resetSortType = false } = {}) {
+    this._pointNewPresenter.destroy();
     Object
       .values(this._pointPresenter)
       .forEach((presenter) => presenter.destroy());

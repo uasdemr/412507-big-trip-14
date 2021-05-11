@@ -115,7 +115,7 @@ const createEventEditTemplate = (point) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.basePrice}">
+          <input class="event__input event__input--price" id="event-price-1" type="number" min="1" name="event-price" value="${point.basePrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -134,6 +134,7 @@ const createEventEditTemplate = (point) => {
 
 export default class EventEdit extends SmartView {
   constructor(point) {
+    console.log(point);
     super();
     this._data = EventEdit.parsePointToData(point);
     this._element = null;
@@ -249,20 +250,44 @@ export default class EventEdit extends SmartView {
   }
 
   _eventEditDestinationChangeHandler(evt) {
-    this.updateData({
-      destination: { name: evt.target.value },
-    });
+    const listChildren = document.getElementById('destination-list-1').children;
+    let msg = '';
+    for (const child of listChildren) {
+      if(child.value === evt.target.value) {
+        msg = '';
+        this.updateData({
+          destination: { name: evt.target.value },
+        });
+        break;
+      } else {
+        msg = 'Введите город из списка.';
+        evt.target.setCustomValidity(msg);
+      }
+    }
   }
 
   _eventEditPriceChangeHandler(evt) {
-    this.updateData({
-      basePrice: parseInt(evt.target.value, 10),
-    });
+    let msg = '';
+    const priceValue = parseInt(evt.target.value, 10);
+    if (priceValue <= 0 || !priceValue) {
+      msg = 'Введите число больше нуля';
+      evt.target.setCustomValidity(msg);
+    } else {
+      this.updateData({
+        basePrice: priceValue,
+      });
+    }
   }
 
   _formSubmitHandler(evt) {
-    evt.preventDefault();
-    this._callback.formSubmit(EventEdit.parseDataToPoint(this._data));
+    const form = document.querySelector('.event--edit');
+    if (form.checkValidity()) {
+      evt.preventDefault();
+      this._callback.formSubmit(EventEdit.parseDataToPoint(this._data));
+    } else {
+      return;
+    }
+
   }
 
   _formBtnCloseClickHandler(evt) {

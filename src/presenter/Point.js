@@ -1,6 +1,6 @@
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { isDateChange, isPriceChange } from '../utils/point';
-import {UserAction, UpdateType} from '../view/const';
+import { UserAction, UpdateType } from '../view/const';
 
 import PointView from '../view/point.js';
 import EventEditView from '../view/event-edit.js';

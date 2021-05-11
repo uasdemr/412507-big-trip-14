@@ -1,9 +1,7 @@
 import AbstractView from './abstract.js';
 
 const createFilterItem = (filter, currentFilterType) => {
-  console.log(filter, currentFilterType);
   return filter.map((item) => {
-    console.log(item.type);
     return `<div class="trip-filters__filter">
       <input
         id="filter-${item.name}"

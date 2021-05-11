@@ -1,6 +1,7 @@
 import { EVENT_TYPES } from '../view/const.js';
 import { getRandomInteger } from '../utils/common';
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 
 const typeGenerator = () => {
   const types = Object.keys(EVENT_TYPES);
@@ -1050,7 +1051,7 @@ const dateGenerator = () => {
   };
 };
 
-const generatePoint = (num) => {
+const generatePoint = () => {
   const typeGenerated = typeGenerator();
   const date = dateGenerator();
 
@@ -1059,7 +1060,7 @@ const generatePoint = (num) => {
     'dateFrom': dayjs(date.start).toISOString(),
     'dateTo': dayjs(date.end).toISOString(),
     'destination': generateDestination2(),
-    'id': num,
+    'id': nanoid(),
     'isFavorite': Math.random() > 0.5,
     'offers': generateOffers(typeGenerated),
     'type': typeGenerated,
