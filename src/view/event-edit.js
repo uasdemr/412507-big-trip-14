@@ -3,6 +3,7 @@ import { offers, destinations } from '../mock/point.js';
 import { EVENT_TYPES } from './const.js';
 import SmartView from './smart.js';
 import flatpickr from 'flatpickr';
+import dayjs from 'dayjs';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
@@ -35,7 +36,7 @@ const createEditFormOffersItem = (allOffers, point) => {
   return allOffers.map((offer, index) => {
     const checked = point.offers.some((it) => it.title === offer.title);
     return `<div class="event__offer-selector">
-         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${point.type}-${index}" type="checkbox" ${checked ? 'checked' : ''}>
+         <input class="event__offer-checkbox  visually-hidden" data-name="${offer.title}" id="event-offer-${point.type}-${index}" type="checkbox" ${checked ? 'checked' : ''}>
          <label class="event__offer-label" for="event-offer-${point.type}-${index}">
            <span class="event__offer-title">${offer.title}</span>
            &plus;&euro;&nbsp;
@@ -114,7 +115,7 @@ const createEventEditTemplate = (point) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.basePrice}">
+          <input class="event__input event__input--price" id="event-price-1" type="number" min="1" name="event-price" value="${point.basePrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -140,16 +141,30 @@ export default class EventEdit extends SmartView {
     this._datepickerTo = null;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._formBtnCloseClickHandler = this._formBtnCloseClickHandler.bind(this);
+
+    this._offerClickHandler = this._offerClickHandler.bind(this);
 
     this._eventEditTypeChangeHandler = this._eventEditTypeChangeHandler.bind(this);
     this._eventEditDestinationChangeHandler = this._eventEditDestinationChangeHandler.bind(this);
+    this._eventEditPriceChangeHandler = this._eventEditPriceChangeHandler.bind(this);
 
     this._dateFromChangeHandler = this._dateFromChangeHandler.bind(this);
     this._dateToChangeHandler = this._dateToChangeHandler.bind(this);
     this._setInnerHandlers();
     this._setDatepickerFrom();
     this._setDatepickerTo();
+  }
+
+  removeElement() {
+    super.removeElement();
+    if (this._datepickerFrom && this._datepickerTo) {
+      this._datepickerFrom.destroy();
+      this._datepickerTo.destroy();
+      this._datepickerFrom = null;
+      this._datepickerTo = null;
+    }
   }
 
   reset(point) {
@@ -167,6 +182,7 @@ export default class EventEdit extends SmartView {
     this._setDatepickerTo();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setFormClickHandler(this._callback.formCloseClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   _setDatepickerFrom() {
@@ -205,20 +221,25 @@ export default class EventEdit extends SmartView {
 
   _dateFromChangeHandler([userDate]) {
     const dates = {
-      dateFrom: userDate,
+      dateFrom: dayjs(userDate).toISOString(),
     };
-    if(this._datepickerTo.selectedDates[0] < userDate)
-      this.updateData({dates});
+    if (this._datepickerTo.selectedDates[0] < userDate) {
+      dates.dateTo = userDate;
+    }
+    this.updateData(dates);
   }
+
   _dateToChangeHandler([userDate]) {
     this.updateData({
-      dateTo: userDate,
+      dateTo: dayjs(userDate).toISOString(),
     });
   }
 
   _setInnerHandlers() {
     this.getElement().querySelectorAll('.event__type-input').forEach((e) => e.addEventListener('change', this._eventEditTypeChangeHandler));
     this.getElement().querySelector('.event__input').addEventListener('change', this._eventEditDestinationChangeHandler);
+    this.getElement().querySelectorAll('.event__offer-checkbox').forEach((e) => e.addEventListener('change', this._offerClickHandler));
+    this.getElement().querySelector('.event__input--price').addEventListener('change', this._eventEditPriceChangeHandler);
   }
 
   _eventEditTypeChangeHandler(evt) {
@@ -228,14 +249,44 @@ export default class EventEdit extends SmartView {
   }
 
   _eventEditDestinationChangeHandler(evt) {
-    this.updateData({
-      destination: { name: evt.target.value },
-    });
+    const listChildren = document.getElementById('destination-list-1').children;
+    let msg = '';
+    for (const child of listChildren) {
+      if(child.value === evt.target.value) {
+        msg = '';
+        this.updateData({
+          destination: { name: evt.target.value },
+        });
+        break;
+      } else {
+        msg = 'Введите город из списка.';
+        evt.target.setCustomValidity(msg);
+      }
+    }
+  }
+
+  _eventEditPriceChangeHandler(evt) {
+    let msg = '';
+    const priceValue = parseInt(evt.target.value, 10);
+    if (priceValue <= 0 || !priceValue) {
+      msg = 'Введите число больше нуля';
+      evt.target.setCustomValidity(msg);
+    } else {
+      this.updateData({
+        basePrice: priceValue,
+      });
+    }
   }
 
   _formSubmitHandler(evt) {
-    evt.preventDefault();
-    this._callback.formSubmit(EventEdit.parseDataToPoint(this._data));
+    const form = document.querySelector('.event--edit');
+    if (form.checkValidity()) {
+      evt.preventDefault();
+      this._callback.formSubmit(EventEdit.parseDataToPoint(this._data));
+    } else {
+      return;
+    }
+
   }
 
   _formBtnCloseClickHandler(evt) {
@@ -243,10 +294,37 @@ export default class EventEdit extends SmartView {
     this._callback.formCloseClick(evt);
   }
 
+  _offerClickHandler(evt) {
+    const isChecked = evt.target.checked;
+    const offer = evt.target.dataset.name;
+    let currentOffers = this._data.offers;
+    if (isChecked) {
+      const allOffers = offers.find((it) => it.type === this._data.type).offers;
+      const checkedOffer = allOffers.find((it) => it.title === offer);
+      currentOffers.push(checkedOffer);
+    } else {
+      currentOffers = currentOffers.filter((it) => it.title !== offer);
+    }
+    this.updateData({
+      offers: currentOffers,
+    });
+  }
+
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(EventEdit.parseDataToPoint(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._formDeleteClickHandler);
+  }
+
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
   }
+
   setFormClickHandler(callback) {
     this._callback.formCloseClick = callback;
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formBtnCloseClickHandler);

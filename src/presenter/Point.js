@@ -1,4 +1,6 @@
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
+import { isDateChange, isPriceChange } from '../utils/point';
+import { UserAction, UpdateType } from '../view/const';
 
 import PointView from '../view/point.js';
 import EventEditView from '../view/event-edit.js';
@@ -20,8 +22,9 @@ export default class Point {
 
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handlePointClickOpen = this._handlePointClickOpen.bind(this);
-    this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handlePointClickClose = this._handlePointClickClose.bind(this);
+    this._handleFormSubmit = this._handleFormSubmit.bind(this);
+    this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
   }
 
@@ -38,6 +41,7 @@ export default class Point {
     this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setFormClickHandler(this._handlePointClickClose);
+    this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
     if (prevPointComponent === null || prevEventEditComponent === null) {
       render(this._pointListContainer, this._pointComponent, RenderPosition.BEFOREEND);
@@ -98,6 +102,8 @@ export default class Point {
 
   _handleFavoriteClick() {
     this._changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._point,
@@ -106,8 +112,24 @@ export default class Point {
         }));
   }
 
+  //Сделать в обработчике проверку на изменения даты и цены
+  //Изменение цены это MINOR обновление
+  //Изменение даты это MAJOR обновление
+  //Сравнить даты из имеющегося this._point и пришедшего point
+
+  //Если обновилась дата, надо сделать перерисовку компонента фильтра и задач
+  //Если обновился прайс, надо сделать перерисовку компонента route-and-cost и задач
   _handleFormSubmit(point) {
-    this._changeData(point);
+    const isDateModify = isDateChange(this._point, point);
+    const isPriceModify = isPriceChange(this._point, point);
+
+    this._changeData(
+      UserAction.UPDATE_POINT,
+      isDateModify ? UpdateType.MAJOR : isPriceModify ? UpdateType.MINOR : UpdateType.PATCH,
+      Object.assign(
+        {},
+        this._point,
+        point));
     this._replaceFormToPoint();
     document.removeEventListener('keydown', this._onEscKeyDown);
   }
@@ -116,5 +138,12 @@ export default class Point {
     this._eventEditComponent.reset(this._point);
     this._replaceFormToPoint();
     document.removeEventListener('keydown', this._onEscKeyDown);
+  }
+
+  _handleDeleteClick(point) {
+    this._changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MAJOR,
+      point);
   }
 }
