@@ -100,12 +100,14 @@ export const sortTimeDown = (pointA, pointB) => {
   if (weight !== null) {
     return weight;
   }
+  const pointAdiff = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom), 'second');
+  const pointBdiff = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom), 'second');
+  return pointBdiff - pointAdiff;
 
-  return dayjs(pointB.dateTo).diff(dayjs(pointA.dateFrom));
 };
 
 export const sortPriceDown = (pointA, pointB) => {
-  return pointA.basePrice - pointB.basePrice;
+  return pointB.basePrice - pointA.basePrice;
 };
 
 export const sortDefault = (pointA, pointB) => {
