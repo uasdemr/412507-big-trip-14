@@ -2,8 +2,8 @@ import { render, RenderPosition, remove } from '../utils/render.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../view/const.js';
 import { sortTimeDown, sortPriceDown, sortDefault } from '../utils/point.js';
 import { filter } from '../utils/filter.js';
-import { EVENT_TYPES } from '../view/const.js';
-import {nanoid} from 'nanoid';
+import { EVENT_TYPES, MenuItem } from '../view/const.js';
+import { nanoid } from 'nanoid';
 
 import RouteAndCostView from '../view/route-and-cost.js';
 import SiteMenuView from '../view/site-menu.js';
@@ -14,6 +14,7 @@ import PointPresenter from './point.js';
 import PointNewPresenter from './point-new.js';
 import FilterPresenter from '../presenter/filter.js';
 import FilterModel from '../model/filter-model.js';
+import StatisticsView from '../view/statistics.js';
 
 
 const filterModel = new FilterModel();
@@ -29,9 +30,10 @@ export default class Trip {
     this._pointPresenter = {};
     this._filterPresenter = new FilterPresenter(this._filterElement, this._filterModel, this._pointsModel);
     this._currentSortType = SortType.DEFAULT;
+    this._renderStats = MenuItem.TABLE;
 
-    this._siteMenuComponent = new SiteMenuView();
     this._sortComponent = null;
+    this._statisticsComponent = null;
     this._eventListComponent = new eventListView();
     this._noPointComponent = new NoPointView();
 
@@ -41,8 +43,10 @@ export default class Trip {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._pointsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
+    this._handleSiteMenuClick = this._handleSiteMenuClick.bind(this);
+
+    // this._pointsModel.addObserver(this._handleModelEvent);
+    // this._filterModel.addObserver(this._handleModelEvent);
 
     this._pointNewPresenter = new PointNewPresenter(this._eventListComponent, this._handleViewAction);
 
@@ -50,10 +54,26 @@ export default class Trip {
       evt.preventDefault();
       this.createPoint();
     });
+
+    // this._siteMenuComponent = new SiteMenuView(this._renderStats);
+    // this._siteMenuComponent.setMenuClickHandler(this._handleSiteMenuClick);
   }
 
   init() {
     this._renderBoard();
+
+    this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+  }
+
+  destroy() {
+    this._clearBoard({ resetSortType: true });
+
+    remove(this._eventListComponent);
+    // remove(this._boardComponent);
+
+    this._pointsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   createPoint() {
@@ -83,12 +103,48 @@ export default class Trip {
       basePrice: 0,
       dateFrom: Date.now(),
       dateTo: Date.now(),
-      destination: {name: 'Chamonix', description: '', pictures: []},
+      destination: { name: 'Chamonix', description: '', pictures: [] },
       id: nanoid(),
       isFavorite: false,
       offers: [],
       type: EVENT_TYPES.taxi.toLowerCase(),
     };
+  }
+
+  _handleSiteMenuClick(menuItem) {
+    console.log(menuItem);
+    switch (menuItem) {
+      case MenuItem.ADD_NEW_POINT:
+        // Скрыть статистику
+        // Показать доску
+        // Показать форму добавления новой задачи
+        // Убрать выделение с ADD NEW TASK после сохранения
+        break;
+      case MenuItem.TABLE:
+        // Скрыть статистику
+        remove(this._siteMenuComponent);
+        remove(this._statisticsComponent);
+        this._statisticsComponent = null;
+        this._renderStats = MenuItem.TABLE;
+        this._renderNavigation();
+        render(this._tripContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+        this._clearTrip();
+        // Показать доску
+        this._renderTrips(this._getPoints());
+        break;
+      case MenuItem.STATISTICS:
+        this._renderStats = MenuItem.STATISTICS;
+        // Скрыть доску
+        this._clearTrip();
+        remove(this._sortComponent);
+        remove(this._siteMenuComponent);
+        remove(this._statisticsComponent);
+        this._renderNavigation();
+        this._statisticsComponent = new StatisticsView(this._pointsModel.getPoints());
+        // Показать статистику
+        render(this._tripContainer, this._statisticsComponent, RenderPosition.BEFOREEND);
+        break;
+    }
   }
 
   _handleSortTypeChange(sortType) {
@@ -157,6 +213,8 @@ export default class Trip {
   }
 
   _renderNavigation() {
+    this._siteMenuComponent = new SiteMenuView(this._renderStats);
+    this._siteMenuComponent.setMenuClickHandler(this._handleSiteMenuClick);
     render(this._navigationElement, this._siteMenuComponent, RenderPosition.BEFOREEND);
   }
 
@@ -184,11 +242,20 @@ export default class Trip {
     if (pointCount === 0) {
       this._renderNoPoints();
     }
-    this._renderSort();
+    // this._renderSort();
     this._renderRouteAndCost();
-    render(this._tripContainer, this._eventListComponent, RenderPosition.BEFOREEND);
-    this._renderTrips(points);
     this._renderNavigation();
+
+    if (this._renderStats === 'Statistics') {
+      // рендерить статистику
+      this._statisticsComponent = new StatisticsView(this._pointsModel.getPoints());
+      render(this._tripContainer, this._statisticsComponent, RenderPosition.BEFOREEND);
+    } else {
+      this._renderSort();
+      render(this._tripContainer, this._eventListComponent, RenderPosition.BEFOREEND);
+      //Временно отрисуем компонент статистики
+      this._renderTrips(points);
+    }
   }
 
   _clearTrip() {
