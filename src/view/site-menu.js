@@ -1,28 +1,32 @@
 import AbstractView from './abstract.js';
 import { MenuItem } from './const.js';
 
-const createMenuItem = () => {
-  return Object.keys(MenuItem).map((item) => `<a class="trip-tabs__btn trip-tabs__btn--active" data-menu=${item} href="#">${MenuItem[item]}</a>`).join('');
+const createMenuItem = (selectedTab) => {
+
+  return Object.keys(MenuItem).map((item) => `<a
+                                                class="trip-tabs__btn
+                                                ${(selectedTab.toLowerCase() === item.toLowerCase()) ? 'trip-tabs__btn--active' : ''}"
+                                                data-menu=${MenuItem[item]}
+                                                href="#">${MenuItem[item]}</a>`).join('');
 };
 
-const createSiteMenuTemplate = () => {
+const createSiteMenuTemplate = (selectedTab) => {
   return `<nav class="trip-controls__trip-tabs trip-tabs">
-    <a class="trip-tabs__btn trip-tabs__btn--active" data-menu=${MenuItem.TABLE} href="#">${MenuItem.TABLE}</a>
-    <a class="trip-tabs__btn" data-menu=${MenuItem.STATISTICS} href="#">${MenuItem.STATISTICS}</a>
+  ${createMenuItem(selectedTab)}
+
   </nav>`;
 };
 
-export default class SiteMenu extends AbstractView{
+export default class SiteMenu extends AbstractView {
   constructor(selectedTab) {
     super();
 
     this._selectedTab = selectedTab;
-    console.log(this._selectedTab);
     this._menuClickHandler = this._menuClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createSiteMenuTemplate();
+    return createSiteMenuTemplate(this._selectedTab);
   }
 
   _menuClickHandler(evt) {

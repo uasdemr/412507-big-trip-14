@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import SmartView from './smart.js';
 
 const createStatisticsTemplate = () => {
-  return `<section class="statistics">
+  return `<section class="statistics visually-hidden">
   <h2 class="visually-hidden">Trip statistics</h2>
 
   <div class="statistics__item statistics__item--money">
@@ -20,11 +20,11 @@ const createStatisticsTemplate = () => {
 };
 
 export default class Statistics extends SmartView {
-  constructor(points) {
+  constructor(model) {
     super();
 
     this._data = {
-      points,
+      points: model.getPoints(),
       // По условиям техзадания по умолчанию интервал - неделя от текущей даты
       dateFrom: (() => {
         const daysToFullWeek = 6;

@@ -6,6 +6,14 @@ export default class Smart extends Abstract {
     this._data = {};
   }
 
+  show() {
+    this.getElement().classList.remove('visually-hidden');
+  }
+
+  hide() {
+    this.getElement().classList.add('visually-hidden');
+  }
+
   updateData(update) {
     if (!update) {
       return;
