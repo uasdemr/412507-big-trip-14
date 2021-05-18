@@ -114,40 +114,24 @@ export default class Trip {
 
   _handleSiteMenuClick(menuItem) {
     switch (menuItem) {
-      case MenuItem.ADD_NEW_POINT:
-        // Скрыть статистику
-        // Показать доску
-        // Показать форму добавления новой задачи
-        // Убрать выделение с ADD NEW TASK после сохранения
-        break;
       case MenuItem.TABLE:
-        // Скрыть статистику
         remove(this._siteMenuComponent);
-        // remove(this._statisticsComponent);
-        // this._statisticsComponent = null;
         this._statisticsComponent.hide();
         this._eventListComponent.show();
         this._renderStats = MenuItem.TABLE;
         this._renderNavigation();
         render(this._tripContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
         this._clearTrip();
-        // Показать доску
         this._renderTrips(this._getPoints());
         break;
       case MenuItem.STATISTICS:
         this._renderStats = MenuItem.STATISTICS;
-        // Скрыть доску
-        // this._clearTrip();
         this._eventListComponent.hide();
         remove(this._sortComponent);
         remove(this._siteMenuComponent);
-        // remove(this._statisticsComponent);
         this._statisticsComponent.show();
+        // this._statisticsComponent._setCharts();
         this._renderNavigation();
-
-        // this._statisticsComponent = new StatisticsView(this._pointsModel.getPoints());
-        // Показать статистику
-        // render(this._tripContainer, this._statisticsComponent, RenderPosition.BEFOREEND);
         break;
     }
   }
