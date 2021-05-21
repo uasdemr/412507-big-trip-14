@@ -3,6 +3,7 @@ import duration from 'dayjs/plugin/duration';
 import SmartView from './smart.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { formatToDayHourMinutes } from '../utils/point.js';
 
 dayjs.extend(duration);
 
@@ -22,7 +23,7 @@ const renderMoneyChart = (points) => {
   const types = points.map((point) => point.type);
   const makeTypesUniq = () => [...new Set(types)];
   const filteredByTypes = makeTypesUniq();
-  moneyCtx.height = BAR_HEIGHT * filteredByTypes.length;
+  moneyCtx.height = BAR_HEIGHT * 7;
 
   const reducedPrices = filteredByTypes.map((type) => pricePointByType(points, type));
 
@@ -58,20 +59,11 @@ const renderMoneyChart = (points) => {
         position: 'left',
       },
       scales: {
-        yAxes: [{
+        dataset: [{
           ticks: {
             fontColor: '#000000',
             padding: 5,
             fontSize: 13,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          barThickness: 44,
-        }],
-        xAxes: [{
-          ticks: {
             display: false,
             beginAtZero: true,
           },
@@ -79,7 +71,7 @@ const renderMoneyChart = (points) => {
             display: false,
             drawBorder: false,
           },
-          minBarLength: 50,
+          barThickness: 44,
         }],
       },
       legend: {
@@ -105,7 +97,7 @@ const renderTypeChart = (points) => {
 
   const typeUsedLengths = filteredByTypes.map((type) => usedPointByType(points, type));
 
-  typeCtx.height = BAR_HEIGHT * filteredByTypes.length;
+  typeCtx.height = BAR_HEIGHT * 7;
   return new Chart(typeCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
@@ -138,20 +130,11 @@ const renderTypeChart = (points) => {
         position: 'left',
       },
       scales: {
-        yAxes: [{
+        dataset: [{
           ticks: {
             fontColor: '#000000',
             padding: 5,
             fontSize: 13,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          barThickness: 44,
-        }],
-        xAxes: [{
-          ticks: {
             display: false,
             beginAtZero: true,
           },
@@ -159,7 +142,7 @@ const renderTypeChart = (points) => {
             display: false,
             drawBorder: false,
           },
-          minBarLength: 50,
+          barThickness: 44,
         }],
       },
       legend: {
@@ -187,12 +170,7 @@ const renderTimeSpendChart = (points) => {
   const filteredByTypes = makeTypesUniq();
 
   const typeDuration = filteredByTypes.map((type) => getTypeDuration(points, type));
-  timeCtx.height = BAR_HEIGHT * typeDuration.length;
-
-  const zeroPad = (num) => {
-    return String(num).padStart(2, 0);
-  };
-
+  timeCtx.height = BAR_HEIGHT * 7;
 
   return new Chart(timeCtx, {
     plugins: [ChartDataLabels],
@@ -216,11 +194,7 @@ const renderTimeSpendChart = (points) => {
           anchor: 'end',
           align: 'start',
           formatter: (val) => {
-            const days = zeroPad(dayjs.duration(val, 'minutes').days());
-            const hours = zeroPad(dayjs.duration(val, 'minutes').hours());
-            const minutes = zeroPad(dayjs.duration(val, 'minutes').minutes());
-            const diffReturned = `${days}D ${hours}H ${minutes}M`;
-            return `${diffReturned}`;
+            return formatToDayHourMinutes(val);
           },
         },
       },
@@ -232,20 +206,11 @@ const renderTimeSpendChart = (points) => {
         position: 'left',
       },
       scales: {
-        yAxes: [{
+        dataset: [{
           ticks: {
             fontColor: '#000000',
             padding: 5,
             fontSize: 13,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          barThickness: 44,
-        }],
-        xAxes: [{
-          ticks: {
             display: false,
             beginAtZero: true,
           },
@@ -253,7 +218,7 @@ const renderTimeSpendChart = (points) => {
             display: false,
             drawBorder: false,
           },
-          minBarLength: 50,
+          barThickness: 44,
         }],
       },
       legend: {
@@ -288,7 +253,10 @@ export default class Statistics extends SmartView {
   constructor(pointsModel) {
     super();
     this._pointsModel = pointsModel;
-    // this._dateChangeHandler = this._dateChangeHandler.bind(this);
+
+    this._moneyChart = undefined;
+    this._typeChart = undefined;
+    this._timeSpendChart = undefined;
   }
 
   removeElement() {
@@ -313,23 +281,19 @@ export default class Statistics extends SmartView {
     this._setCharts();
   }
 
-  // _dateChangeHandler([dateFrom, dateTo]) {
-  //   if (!dateFrom || !dateTo) {
-  //     return;
-  //   }
-
-  //   this.updateData({
-  //     dateFrom,
-  //     dateTo,
-  //   });
-  // }
+  hide() {
+    super.hide();
+    this._moneyChart.destroy();
+    this._typeChart.destroy();
+    this._timeSpendChart.destroy();
+  }
 
   _setCharts() {
-    // Нужно отрисовать два графика
-    // Рассчитаем высоту канваса в зависимости от того, сколько данных в него будет передаваться
-    renderMoneyChart(this._pointsModel.getPoints());
-    renderTypeChart(this._pointsModel.getPoints());
-    renderTimeSpendChart(this._pointsModel.getPoints());
+    const points = this._pointsModel.getPoints();
+
+    this._moneyChart = renderMoneyChart(points);
+    this._typeChart = renderTypeChart(points);
+    this._timeSpendChart = renderTimeSpendChart(points);
   }
 }
 

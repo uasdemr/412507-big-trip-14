@@ -33,7 +33,6 @@ export default class Trip {
     this._renderStats = MenuItem.TABLE;
 
     this._sortComponent = null;
-    // this._statisticsComponent = null;
     this._eventListComponent = new eventListView();
     this._noPointComponent = new NoPointView();
     this._statisticsComponent = new StatisticsView(this._pointsModel);
@@ -46,18 +45,12 @@ export default class Trip {
 
     this._handleSiteMenuClick = this._handleSiteMenuClick.bind(this);
 
-    // this._pointsModel.addObserver(this._handleModelEvent);
-    // this._filterModel.addObserver(this._handleModelEvent);
-
     this._pointNewPresenter = new PointNewPresenter(this._eventListComponent, this._handleViewAction);
 
     document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
       evt.preventDefault();
       this.createPoint();
     });
-
-    // this._siteMenuComponent = new SiteMenuView(this._renderStats);
-    // this._siteMenuComponent.setMenuClickHandler(this._handleSiteMenuClick);
   }
 
   init() {
@@ -71,7 +64,6 @@ export default class Trip {
     this._clearBoard({ resetSortType: true });
 
     remove(this._eventListComponent);
-    // remove(this._boardComponent);
 
     this._pointsModel.removeObserver(this._handleModelEvent);
     this._filterModel.removeObserver(this._handleModelEvent);
@@ -239,21 +231,15 @@ export default class Trip {
     if (pointCount === 0) {
       this._renderNoPoints();
     }
-    // this._renderSort();
     this._renderRouteAndCost();
     this._renderNavigation();
     render(this._tripContainer, this._statisticsComponent, RenderPosition.BEFOREEND);
 
-    if (this._renderStats === 'Statistics') {
-      // рендерить статистику
-
-      // this._statisticsComponent = new StatisticsView(this._pointsModel.getPoints());
-      // render(this._tripContainer, this._statisticsComponent, RenderPosition.BEFOREEND);
+    if (this._renderStats === MenuItem.STATISTICS) {
       this._statisticsComponent.show();
     } else {
       this._renderSort();
       render(this._tripContainer, this._eventListComponent, RenderPosition.BEFOREEND);
-      //Временно отрисуем компонент статистики
       this._renderTrips(points);
     }
   }
