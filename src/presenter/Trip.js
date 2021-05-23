@@ -35,7 +35,7 @@ export default class Trip {
     this._sortComponent = null;
     this._eventListComponent = new eventListView();
     this._noPointComponent = new NoPointView();
-    this._statisticsComponent = new StatisticsView(this._pointsModel);
+    this._statisticsComponent = new StatisticsView(this._getPoints.bind(this));
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -228,9 +228,6 @@ export default class Trip {
     const pointCount = points.length;
     this._filterPresenter.init();
 
-    if (pointCount === 0) {
-      this._renderNoPoints();
-    }
     this._renderRouteAndCost();
     this._renderNavigation();
     render(this._tripContainer, this._statisticsComponent, RenderPosition.BEFOREEND);
@@ -238,6 +235,9 @@ export default class Trip {
     if (this._renderStats === MenuItem.STATISTICS) {
       this._statisticsComponent.show();
     } else {
+      if (pointCount === 0) {
+        this._renderNoPoints();
+      }
       this._renderSort();
       render(this._tripContainer, this._eventListComponent, RenderPosition.BEFOREEND);
       this._renderTrips(points);

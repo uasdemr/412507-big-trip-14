@@ -4,6 +4,7 @@ import SmartView from './smart.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { formatToDayHourMinutes } from '../utils/point.js';
+import { EVENT_TYPES } from './const.js';
 
 dayjs.extend(duration);
 
@@ -20,18 +21,16 @@ const pricePointByType = (points, type) => {
 const renderMoneyChart = (points) => {
   const moneyCtx = document.querySelector('.statistics__chart--money');
 
-  const types = points.map((point) => point.type);
-  const makeTypesUniq = () => [...new Set(types)];
-  const filteredByTypes = makeTypesUniq();
-  moneyCtx.height = BAR_HEIGHT * 7;
+  const labels = Object.values(EVENT_TYPES);
+  const reducedPrices = Object.keys(EVENT_TYPES).map((type) => pricePointByType(points, type));
 
-  const reducedPrices = filteredByTypes.map((type) => pricePointByType(points, type));
+  moneyCtx.height = BAR_HEIGHT * labels.length;
 
   return new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: filteredByTypes,
+      labels: labels,
       datasets: [{
         data: reducedPrices,
         backgroundColor: '#ffffff',
@@ -59,11 +58,20 @@ const renderMoneyChart = (points) => {
         position: 'left',
       },
       scales: {
-        dataset: [{
+        yAxes: [{
           ticks: {
             fontColor: '#000000',
             padding: 5,
             fontSize: 13,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          barThickness: 44,
+        }],
+        xAxes: [{
+          ticks: {
             display: false,
             beginAtZero: true,
           },
@@ -71,7 +79,7 @@ const renderMoneyChart = (points) => {
             display: false,
             drawBorder: false,
           },
-          barThickness: 44,
+          minBarLength: 50,
         }],
       },
       legend: {
@@ -91,18 +99,16 @@ const usedPointByType = (points, type) => {
 const renderTypeChart = (points) => {
   const typeCtx = document.querySelector('.statistics__chart--transport');
 
-  const types = points.map((point) => point.type);
-  const makeTypesUniq = () => [...new Set(types)];
-  const filteredByTypes = makeTypesUniq();
+  const labels = Object.values(EVENT_TYPES);
+  const typeUsedLengths = Object.keys(EVENT_TYPES).map((type) => usedPointByType(points, type));
 
-  const typeUsedLengths = filteredByTypes.map((type) => usedPointByType(points, type));
+  typeCtx.height = BAR_HEIGHT * labels.length;
 
-  typeCtx.height = BAR_HEIGHT * 7;
   return new Chart(typeCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: filteredByTypes,
+      labels: labels,
       datasets: [{
         data: typeUsedLengths,
         backgroundColor: '#ffffff',
@@ -130,11 +136,20 @@ const renderTypeChart = (points) => {
         position: 'left',
       },
       scales: {
-        dataset: [{
+        yAxes: [{
           ticks: {
             fontColor: '#000000',
             padding: 5,
             fontSize: 13,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          barThickness: 44,
+        }],
+        xAxes: [{
+          ticks: {
             display: false,
             beginAtZero: true,
           },
@@ -142,7 +157,7 @@ const renderTypeChart = (points) => {
             display: false,
             drawBorder: false,
           },
-          barThickness: 44,
+          minBarLength: 50,
         }],
       },
       legend: {
@@ -165,18 +180,16 @@ const getTypeDuration = (points, type) => {
 const renderTimeSpendChart = (points) => {
   const timeCtx = document.querySelector('.statistics__chart--time');
 
-  const types = points.map((point) => point.type);
-  const makeTypesUniq = () => [...new Set(types)];
-  const filteredByTypes = makeTypesUniq();
+  const labels = Object.values(EVENT_TYPES);
+  const typeDuration = Object.keys(EVENT_TYPES).map((type) => getTypeDuration(points, type));
 
-  const typeDuration = filteredByTypes.map((type) => getTypeDuration(points, type));
-  timeCtx.height = BAR_HEIGHT * 7;
+  timeCtx.height = BAR_HEIGHT * labels.length;
 
   return new Chart(timeCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: filteredByTypes,
+      labels: labels,
       datasets: [{
         data: typeDuration,
         backgroundColor: '#ffffff',
@@ -194,7 +207,7 @@ const renderTimeSpendChart = (points) => {
           anchor: 'end',
           align: 'start',
           formatter: (val) => {
-            return formatToDayHourMinutes(val);
+            return val === 0 ? '0M' : formatToDayHourMinutes(val);
           },
         },
       },
@@ -206,11 +219,20 @@ const renderTimeSpendChart = (points) => {
         position: 'left',
       },
       scales: {
-        dataset: [{
+        yAxes: [{
           ticks: {
             fontColor: '#000000',
             padding: 5,
             fontSize: 13,
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false,
+          },
+          barThickness: 44,
+        }],
+        xAxes: [{
+          ticks: {
             display: false,
             beginAtZero: true,
           },
@@ -218,7 +240,7 @@ const renderTimeSpendChart = (points) => {
             display: false,
             drawBorder: false,
           },
-          barThickness: 44,
+          minBarLength: 50,
         }],
       },
       legend: {
@@ -250,10 +272,9 @@ const createStatisticsTemplate = () => {
 };
 
 export default class Statistics extends SmartView {
-  constructor(pointsModel) {
+  constructor(getPoints) {
     super();
-    this._pointsModel = pointsModel;
-
+    this._getPoints = getPoints;
     this._moneyChart = undefined;
     this._typeChart = undefined;
     this._timeSpendChart = undefined;
@@ -277,19 +298,29 @@ export default class Statistics extends SmartView {
   }
 
   show() {
+    this.hide();
     super.show();
     this._setCharts();
   }
 
   hide() {
     super.hide();
-    this._moneyChart.destroy();
-    this._typeChart.destroy();
-    this._timeSpendChart.destroy();
+    if (this._moneyChart) {
+      this._moneyChart.destroy();
+      this._moneyChart = undefined;
+    }
+    if (this._typeChart) {
+      this._typeChart.destroy();
+      this._typeChart = undefined;
+    }
+    if (this._timeSpendChart) {
+      this._timeSpendChart.destroy();
+      this._timeSpendChart = undefined;
+    }
   }
 
   _setCharts() {
-    const points = this._pointsModel.getPoints();
+    const points = this._getPoints();
 
     this._moneyChart = renderMoneyChart(points);
     this._typeChart = renderTypeChart(points);
