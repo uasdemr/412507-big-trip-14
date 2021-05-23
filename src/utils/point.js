@@ -39,20 +39,26 @@ export const isPast = (dateTo) => {
   return new Date(dateTo) < Date.now();
 };
 
+export const zeroPad = (num) => {
+  return String(num).padStart(2, 0);
+};
+
+export const formatToDayHourMinutes = (val) => {
+  const days = zeroPad(dayjs.duration(val, 'minutes').days());
+  const hours = zeroPad(dayjs.duration(val, 'minutes').hours());
+  const minutes = zeroPad(dayjs.duration(val, 'minutes').minutes());
+  return `${days}D ${hours}H ${minutes}M`;
+};
+
 export const timeMakerDayJs = (point) => {
   const dayjs1 = dayjs(point.dateFrom);
   const dayjs2 = dayjs(point.dateTo);
   const diffInMinutes = dayjs2.diff(dayjs1, 'minute');
 
-  const zeroPad = (num) => {
-    return String(num).padStart(2, 0);
-  };
-
-  const days = zeroPad(dayjs.duration(diffInMinutes, 'minutes').days());
-
-  const hours = zeroPad(dayjs.duration(diffInMinutes, 'minutes').hours());
-  const minutes = zeroPad(dayjs.duration(diffInMinutes, 'minutes').minutes());
-  const diffReturned = `${days}D ${hours}H ${minutes}M`;
+  // const days = zeroPad(dayjs.duration(diffInMinutes, 'minutes').days());
+  // const hours = zeroPad(dayjs.duration(diffInMinutes, 'minutes').hours());
+  // const minutes = zeroPad(dayjs.duration(diffInMinutes, 'minutes').minutes());
+  const diffReturned = formatToDayHourMinutes(diffInMinutes);
 
   const eventStartTimeDateTime = dayjs1.format('YYYY-MM-DDTHH:mm');
   const eventEndTimeDateTime = dayjs2.format('YYYY-MM-DDTHH:mm');
