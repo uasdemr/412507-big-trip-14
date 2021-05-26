@@ -20,7 +20,7 @@ import StatisticsView from '../view/statistics.js';
 const filterModel = new FilterModel();
 
 export default class Trip {
-  constructor(tripContainer, tripMainElement, navigationElement, filterElement, pointsModel, offers, destinations) {
+  constructor(tripContainer, tripMainElement, navigationElement, filterElement, pointsModel, offers, destinations, api) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._tripContainer = tripContainer;
@@ -34,6 +34,7 @@ export default class Trip {
     this._isLoading = true;
     this._offers = offers;
     this._destinations = destinations;
+    this._api = api;
 
     this._sortComponent = null;
     this._eventListComponent = new eventListView();
@@ -151,7 +152,9 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this._pointsModel.updatePoint(updateType, update);
+        this._api.updatePoint(update).then((response) => {
+          this._pointsModel.updatePoint(updateType, response);
+        });
         break;
       case UserAction.ADD_POINT:
         this._pointsModel.addPoint(updateType, update);

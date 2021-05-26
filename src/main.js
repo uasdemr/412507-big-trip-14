@@ -21,7 +21,7 @@ render(tripEvents, loadingComponent, RenderPosition.AFTERBEGIN);
 
 Promise.all([api.getPoints(), api.getOffers(), api.getDestinations()])
   .then(([points, offers, destinations]) => {
-    const tripPresenter = new TripPresenter(tripEvents, tripMain, navigation, filter, pointsModel, offers, destinations);
+    const tripPresenter = new TripPresenter(tripEvents, tripMain, navigation, filter, pointsModel, offers, destinations, api);
 
     pointsModel.setPoints(UpdateType.INIT, points);
     remove(loadingComponent);
