@@ -20,7 +20,7 @@ import StatisticsView from '../view/statistics.js';
 const filterModel = new FilterModel();
 
 export default class Trip {
-  constructor(tripContainer, tripMainElement, navigationElement, filterElement, pointsModel) {
+  constructor(tripContainer, tripMainElement, navigationElement, filterElement, pointsModel, offers, destinations) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._tripContainer = tripContainer;
@@ -31,6 +31,9 @@ export default class Trip {
     this._filterPresenter = new FilterPresenter(this._filterElement, this._filterModel, this._pointsModel);
     this._currentSortType = SortType.DEFAULT;
     this._renderStats = MenuItem.TABLE;
+    this._isLoading = true;
+    this._offers = offers;
+    this._destinations = destinations;
 
     this._sortComponent = null;
     this._eventListComponent = new eventListView();
@@ -45,7 +48,7 @@ export default class Trip {
 
     this._handleSiteMenuClick = this._handleSiteMenuClick.bind(this);
 
-    this._pointNewPresenter = new PointNewPresenter(this._eventListComponent, this._handleViewAction);
+    this._pointNewPresenter = new PointNewPresenter(this._eventListComponent, this._handleViewAction, this._offers, this._destinations);
 
     document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
       evt.preventDefault();
@@ -176,11 +179,15 @@ export default class Trip {
         this._clearBoard({ resetSortType: true });
         this._renderBoard();
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        this._renderTrips(this._getPoints());
+        break;
     }
   }
 
   _renderRouteAndCost() {
-    if(this._routeAndCostComponent) {
+    if (this._routeAndCostComponent) {
       remove(this._routeAndCostComponent);
       this._routeAndCostComponent = null;
     }
@@ -198,7 +205,7 @@ export default class Trip {
   }
 
   _renderNavigation() {
-    if(this._siteMenuComponent) {
+    if (this._siteMenuComponent) {
       remove(this._siteMenuComponent);
       this._siteMenuComponent = null;
     }
@@ -208,7 +215,7 @@ export default class Trip {
   }
 
   _renderTrip(point) {
-    const pointPresenter = new PointPresenter(this._eventListComponent, this._handleViewAction, this._handleModeChange);
+    const pointPresenter = new PointPresenter(this._eventListComponent, this._handleViewAction, this._handleModeChange, this._offers, this._destinations);
     pointPresenter.init(point);
     this._pointPresenter[point.id] = pointPresenter;
   }

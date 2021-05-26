@@ -1,5 +1,4 @@
 import { timeMakerDayJs } from '../utils/point.js';
-import { offers, destinations } from '../mock/point.js';
 import { EVENT_TYPES } from './const.js';
 import SmartView from './smart.js';
 import flatpickr from 'flatpickr';
@@ -7,7 +6,7 @@ import dayjs from 'dayjs';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-const createEventDestination = (point) => {
+const createEventDestination = (point, destinations) => {
   const imgCreator = (pictures) => {
 
     return pictures.map((picture) => {
@@ -46,7 +45,7 @@ const createEditFormOffersItem = (allOffers, point) => {
   }).join('');
 };
 
-const createEditFormOffers = (point) => {
+const createEditFormOffers = (point, offers) => {
   const allOffers = offers.find((it) => it.type === point.type).offers;
   const isLength = allOffers.length === 0 ? 'visually-hidden' : '';
   return `<section class="event__section  event__section--offers ${isLength}">
@@ -57,13 +56,13 @@ const createEditFormOffers = (point) => {
     </section>`;
 };
 
-const createPointDestinationList = () => {
+const createPointDestinationList = (destinations) => {
   return destinations.map((item) => {
     return `<option value="${item.name}">${item.name}</option>`;
   }).join('');
 };
 
-const createEventEditTemplate = (point) => {
+const createEventEditTemplate = (point, offers, destinations) => {
   const dates = timeMakerDayJs(point);
   const eventTypeItem = () => {
     return Object.entries(EVENT_TYPES).map(([key, val]) => {
@@ -98,7 +97,7 @@ const createEventEditTemplate = (point) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${point.destination.name}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${createPointDestinationList()}
+            ${createPointDestinationList(destinations)}
           </datalist>
         </div>
 
@@ -125,20 +124,22 @@ const createEventEditTemplate = (point) => {
         </button>
       </header>
       <section class="event__details">
-        ${createEditFormOffers(point)}
-        ${createEventDestination(point)}
+        ${createEditFormOffers(point, offers)}
+        ${createEventDestination(point, destinations)}
       </section>
     </form>
   </li>`;
 };
 
 export default class EventEdit extends SmartView {
-  constructor(point) {
+  constructor(point, offers, destinations) {
     super();
     this._data = EventEdit.parsePointToData(point);
     this._element = null;
     this._datepickerFrom = null;
     this._datepickerTo = null;
+    this._offers = offers;
+    this._destinations = destinations;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
@@ -173,7 +174,7 @@ export default class EventEdit extends SmartView {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._data);
+    return createEventEditTemplate(this._data, this._offers, this._destinations);
   }
 
   restoreHandlers() {
@@ -299,7 +300,7 @@ export default class EventEdit extends SmartView {
     const offer = evt.target.dataset.name;
     let currentOffers = this._data.offers;
     if (isChecked) {
-      const allOffers = offers.find((it) => it.type === this._data.type).offers;
+      const allOffers = this._offers.find((it) => it.type === this._data.type).offers;
       const checkedOffer = allOffers.find((it) => it.title === offer);
       currentOffers.push(checkedOffer);
     } else {

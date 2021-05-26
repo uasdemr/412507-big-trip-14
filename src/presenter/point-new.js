@@ -4,9 +4,11 @@ import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../view/const.js';
 
 export default class PointNew {
-  constructor(pointListContainer, changeData) {
+  constructor(pointListContainer, changeData, offers, destinations) {
     this._pointListContainer = pointListContainer;
     this._changeData = changeData;
+    this._offers = offers;
+    this._destinations = destinations;
 
     this._eventEditComponent = null;
 
@@ -21,7 +23,7 @@ export default class PointNew {
     }
 
     //Поддержать во вьюшке отсутствие данных - значит создается новая точка
-    this._eventEditComponent = new EventEditView(defaultPoint);
+    this._eventEditComponent = new EventEditView(defaultPoint, this._offers, this._destinations);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
     this._eventEditComponent.setFormClickHandler(this._handleDeleteClick);
