@@ -3,7 +3,6 @@ import { SortType, UpdateType, UserAction, FilterType } from '../view/const.js';
 import { sortTimeDown, sortPriceDown, sortDefault } from '../utils/point.js';
 import { filter } from '../utils/filter.js';
 import { EVENT_TYPES, MenuItem } from '../view/const.js';
-import { nanoid } from 'nanoid';
 
 import RouteAndCostView from '../view/route-and-cost.js';
 import SiteMenuView from '../view/site-menu.js';
@@ -98,10 +97,9 @@ export default class Trip {
   _createEmptyPoint() {
     return {
       basePrice: 0,
-      dateFrom: Date.now(),
-      dateTo: Date.now(),
+      dateFrom: new Date(),
+      dateTo: new Date(),
       destination: { name: 'Chamonix', description: '', pictures: [] },
-      id: nanoid(),
       isFavorite: false,
       offers: [],
       type: EVENT_TYPES.taxi.toLowerCase(),
@@ -157,10 +155,21 @@ export default class Trip {
         });
         break;
       case UserAction.ADD_POINT:
-        this._pointsModel.addPoint(updateType, update);
+        // this._pointsModel.addPoint(updateType, update);
+        console.log(update);
+        this._api.addPoint(update).then((response) => {
+          this._pointsModel.addPoint(updateType, response);
+        });
         break;
       case UserAction.DELETE_POINT:
-        this._pointsModel.deletePoint(updateType, update);
+        // this._pointsModel.deletePoint(updateType, update);
+        this._api.deletePoint(update).then(() => {
+          // Обратите внимание, метод удаления задачи на сервере
+          // ничего не возвращает. Это и верно,
+          // ведь что можно вернуть при удалении задачи?
+          // Поэтому в модель мы всё также передаем update
+          this._pointsModel.deletePoint(updateType, update);
+        });
         break;
     }
   }

@@ -331,8 +331,8 @@ export default class EventEdit extends SmartView {
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._formBtnCloseClickHandler);
   }
 
-  static parsePointToData(task) {
-    return Object.assign({}, task);
+  static parsePointToData(point) {
+    return Object.assign({}, point);
   }
 
   static parseDataToPoint(data) {
