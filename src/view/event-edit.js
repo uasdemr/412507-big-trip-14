@@ -250,19 +250,16 @@ export default class EventEdit extends SmartView {
   }
 
   _eventEditDestinationChangeHandler(evt) {
-    const listChildren = document.getElementById('destination-list-1').children;
+    const destination = this._destinations.find((it) => it.name === evt.target.value);
     let msg = '';
-    for (const child of listChildren) {
-      if(child.value === evt.target.value) {
-        msg = '';
-        this.updateData({
-          destination: { name: evt.target.value },
-        });
-        break;
-      } else {
-        msg = 'Введите город из списка.';
-        evt.target.setCustomValidity(msg);
-      }
+    if (destination) {
+      msg = '';
+      this.updateData({
+        destination: destination,
+      });
+    } else {
+      msg = 'Введите город из списка.';
+      evt.target.setCustomValidity(msg);
     }
   }
 

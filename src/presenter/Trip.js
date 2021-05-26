@@ -99,7 +99,7 @@ export default class Trip {
       basePrice: 0,
       dateFrom: new Date(),
       dateTo: new Date(),
-      destination: { name: 'Chamonix', description: '', pictures: [] },
+      destination: this._destinations[0],
       isFavorite: false,
       offers: [],
       type: EVENT_TYPES.taxi.toLowerCase(),
