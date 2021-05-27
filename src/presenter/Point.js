@@ -10,6 +10,11 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+};
+
 export default class Point {
   constructor(pointListContainer, changeData, changeMode, offers, destinations) {
     this._pointListContainer = pointListContainer;
@@ -60,7 +65,8 @@ export default class Point {
 
     if (this._pointListContainer.getElement().contains(prevEventEditComponent.getElement())) {
       if (this._mode === Mode.EDITING) {
-        replace(this._eventEditComponent, prevEventEditComponent);
+        replace(this._pointComponent, prevEventEditComponent);
+        this._mode = Mode.DEFAULT;
       }
     }
 
@@ -76,6 +82,23 @@ export default class Point {
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceFormToPoint();
+    }
+  }
+
+  setViewState(state) {
+    switch (state) {
+      case State.SAVING:
+        this._eventEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this._eventEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
     }
   }
 
@@ -125,7 +148,7 @@ export default class Point {
         {},
         this._point,
         point));
-    this._replaceFormToPoint();
+    // this._replaceFormToPoint();
     document.removeEventListener('keydown', this._onEscKeyDown);
   }
 
