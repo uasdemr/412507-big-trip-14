@@ -50,12 +50,24 @@ export default class PointNew {
     });
   }
 
+  setAborting() {
+    const resetFormState = () => {
+      this._eventEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this._eventEditComponent.shake(resetFormState);
+  }
+
   _handleFormSubmit(point) {
     this._changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
       point);
-    this.destroy();
+    // this.destroy();
   }
 
   _handleDeleteClick() {
