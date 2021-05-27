@@ -10,11 +10,19 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
 export default class Point {
-  constructor(pointListContainer, changeData, changeMode) {
+  constructor(pointListContainer, changeData, changeMode, offers, destinations) {
     this._pointListContainer = pointListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+    this._offers = offers;
+    this._destinations = destinations;
 
     this._pointComponent = null;
     this._eventEditComponent = null;
@@ -35,7 +43,7 @@ export default class Point {
     const prevEventEditComponent = this._eventEditComponent;
 
     this._pointComponent = new PointView(point);
-    this._eventEditComponent = new EventEditView(point);
+    this._eventEditComponent = new EventEditView(point, this._offers, this._destinations);
 
     this._pointComponent.setEditClickHandler(this._handlePointClickOpen);
     this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
@@ -58,7 +66,8 @@ export default class Point {
 
     if (this._pointListContainer.getElement().contains(prevEventEditComponent.getElement())) {
       if (this._mode === Mode.EDITING) {
-        replace(this._eventEditComponent, prevEventEditComponent);
+        replace(this._pointComponent, prevEventEditComponent);
+        this._mode = Mode.DEFAULT;
       }
     }
 
@@ -74,6 +83,35 @@ export default class Point {
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceFormToPoint();
+    }
+  }
+
+  setViewState(state) {
+    const resetFormState = () => {
+      this._eventEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._eventEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this._eventEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case State.ABORTING:
+        this._pointComponent.shake(resetFormState);
+        this._eventEditComponent.shake(resetFormState);
+        break;
     }
   }
 
@@ -112,13 +150,6 @@ export default class Point {
         }));
   }
 
-  //Сделать в обработчике проверку на изменения даты и цены
-  //Изменение цены это MINOR обновление
-  //Изменение даты это MAJOR обновление
-  //Сравнить даты из имеющегося this._point и пришедшего point
-
-  //Если обновилась дата, надо сделать перерисовку компонента фильтра и задач
-  //Если обновился прайс, надо сделать перерисовку компонента route-and-cost и задач
   _handleFormSubmit(point) {
     const isDateModify = isDateChange(this._point, point);
     const isPriceModify = isPriceChange(this._point, point);
@@ -130,7 +161,7 @@ export default class Point {
         {},
         this._point,
         point));
-    this._replaceFormToPoint();
+    // this._replaceFormToPoint();
     document.removeEventListener('keydown', this._onEscKeyDown);
   }
 

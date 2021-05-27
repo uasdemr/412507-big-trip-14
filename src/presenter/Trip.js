@@ -3,14 +3,13 @@ import { SortType, UpdateType, UserAction, FilterType } from '../view/const.js';
 import { sortTimeDown, sortPriceDown, sortDefault } from '../utils/point.js';
 import { filter } from '../utils/filter.js';
 import { EVENT_TYPES, MenuItem } from '../view/const.js';
-import { nanoid } from 'nanoid';
 
 import RouteAndCostView from '../view/route-and-cost.js';
 import SiteMenuView from '../view/site-menu.js';
 import SortView from '../view/sort.js';
 import eventListView from '../view/list-view.js';
 import NoPointView from '../view/no-point.js';
-import PointPresenter from './point.js';
+import PointPresenter, { State as PointPresenterViewState } from './point.js';
 import PointNewPresenter from './point-new.js';
 import FilterPresenter from '../presenter/filter.js';
 import FilterModel from '../model/filter-model.js';
@@ -20,7 +19,7 @@ import StatisticsView from '../view/statistics.js';
 const filterModel = new FilterModel();
 
 export default class Trip {
-  constructor(tripContainer, tripMainElement, navigationElement, filterElement, pointsModel) {
+  constructor(tripContainer, tripMainElement, navigationElement, filterElement, pointsModel, offers, destinations, api) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._tripContainer = tripContainer;
@@ -31,6 +30,10 @@ export default class Trip {
     this._filterPresenter = new FilterPresenter(this._filterElement, this._filterModel, this._pointsModel);
     this._currentSortType = SortType.DEFAULT;
     this._renderStats = MenuItem.TABLE;
+    this._isLoading = true;
+    this._offers = offers;
+    this._destinations = destinations;
+    this._api = api;
 
     this._sortComponent = null;
     this._eventListComponent = new eventListView();
@@ -45,7 +48,7 @@ export default class Trip {
 
     this._handleSiteMenuClick = this._handleSiteMenuClick.bind(this);
 
-    this._pointNewPresenter = new PointNewPresenter(this._eventListComponent, this._handleViewAction);
+    this._pointNewPresenter = new PointNewPresenter(this._eventListComponent, this._handleViewAction, this._offers, this._destinations);
 
     document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
       evt.preventDefault();
@@ -94,10 +97,9 @@ export default class Trip {
   _createEmptyPoint() {
     return {
       basePrice: 0,
-      dateFrom: Date.now(),
-      dateTo: Date.now(),
-      destination: { name: 'Chamonix', description: '', pictures: [] },
-      id: nanoid(),
+      dateFrom: new Date(),
+      dateTo: new Date(),
+      destination: this._destinations[0],
       isFavorite: false,
       offers: [],
       type: EVENT_TYPES.taxi.toLowerCase(),
@@ -148,13 +150,33 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this._pointsModel.updatePoint(updateType, update);
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.SAVING);
+        this._api.updatePoint(update).then((response) => {
+          this._pointsModel.updatePoint(updateType, response);
+        })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
         break;
       case UserAction.ADD_POINT:
-        this._pointsModel.addPoint(updateType, update);
+        // this._pointsModel.addPoint(updateType, update);
+        this._pointNewPresenter.setSaving();
+        this._api.addPoint(update).then((response) => {
+          this._pointsModel.addPoint(updateType, response);
+          this._pointNewPresenter.destroy();
+        })
+          .catch(() => {
+            this._pointNewPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_POINT:
-        this._pointsModel.deletePoint(updateType, update);
+        this._pointPresenter[update.id].setViewState(PointPresenterViewState.DELETING);
+        this._api.deletePoint(update).then(() => {
+          this._pointsModel.deletePoint(updateType, update);
+        })
+          .catch(() => {
+            this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
+          });
         break;
     }
   }
@@ -176,11 +198,15 @@ export default class Trip {
         this._clearBoard({ resetSortType: true });
         this._renderBoard();
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        this._renderTrips(this._getPoints());
+        break;
     }
   }
 
   _renderRouteAndCost() {
-    if(this._routeAndCostComponent) {
+    if (this._routeAndCostComponent) {
       remove(this._routeAndCostComponent);
       this._routeAndCostComponent = null;
     }
@@ -198,7 +224,7 @@ export default class Trip {
   }
 
   _renderNavigation() {
-    if(this._siteMenuComponent) {
+    if (this._siteMenuComponent) {
       remove(this._siteMenuComponent);
       this._siteMenuComponent = null;
     }
@@ -208,7 +234,7 @@ export default class Trip {
   }
 
   _renderTrip(point) {
-    const pointPresenter = new PointPresenter(this._eventListComponent, this._handleViewAction, this._handleModeChange);
+    const pointPresenter = new PointPresenter(this._eventListComponent, this._handleViewAction, this._handleModeChange, this._offers, this._destinations);
     pointPresenter.init(point);
     this._pointPresenter[point.id] = pointPresenter;
   }
