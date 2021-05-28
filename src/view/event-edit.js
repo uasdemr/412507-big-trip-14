@@ -227,9 +227,9 @@ export default class EventEdit extends SmartView {
 
   _dateFromChangeHandler([userDate]) {
     const dates = {
-      dateFrom: dayjs(userDate).toISOString(),
+      dateFrom: userDate,
     };
-    if (this._datepickerTo.selectedDates[0] < userDate) {
+    if (this._datepickerTo.selectedDates[0] < dates.dateFrom) {
       dates.dateTo = userDate;
     }
     this.updateData(dates);
@@ -237,7 +237,7 @@ export default class EventEdit extends SmartView {
 
   _dateToChangeHandler([userDate]) {
     this.updateData({
-      dateTo: dayjs(userDate).toISOString(),
+      dateTo: userDate,
     });
   }
 
