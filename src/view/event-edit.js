@@ -144,7 +144,7 @@ export default class EventEdit extends SmartView {
     this._datepickerTo = null;
     this._offers = offers;
     this._destinations = destinations;
-    this._newPoint = isNewPoint;
+    this._isNewPoint = isNewPoint;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
@@ -179,7 +179,7 @@ export default class EventEdit extends SmartView {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._data, this._offers, this._destinations, this._newPoint);
+    return createEventEditTemplate(this._data, this._offers, this._destinations, this._isNewPoint);
   }
 
   restoreHandlers() {

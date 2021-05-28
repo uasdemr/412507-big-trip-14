@@ -8,7 +8,6 @@ export default class PointNew {
     this._changeData = changeData;
     this._offers = offers;
     this._destinations = destinations;
-    this._isNewPoint = true;
 
     this._eventEditComponent = null;
 
@@ -22,7 +21,7 @@ export default class PointNew {
       return;
     }
 
-    this._eventEditComponent = new EventEditView(defaultPoint, this._offers, this._destinations, this._isNewPoint);
+    this._eventEditComponent = new EventEditView(defaultPoint, this._offers, this._destinations, true);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
     this._eventEditComponent.setFormClickHandler(this._handleDeleteClick);
