@@ -2,7 +2,6 @@ import { timeMakerDayJs } from '../utils/point.js';
 import { EVENT_TYPES } from './const.js';
 import SmartView from './smart.js';
 import flatpickr from 'flatpickr';
-import dayjs from 'dayjs';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
@@ -62,7 +61,7 @@ const createPointDestinationList = (destinations) => {
   }).join('');
 };
 
-const createEventEditTemplate = (point, offers, destinations) => {
+const createEventEditTemplate = (point, offers, destinations, isNew) => {
   const { isDisabled, isSaving, isDeleting } = point;
   const dates = timeMakerDayJs(point);
   const eventTypeItem = () => {
@@ -122,7 +121,7 @@ const createEventEditTemplate = (point, offers, destinations) => {
           ${isSaving ? 'saving...' : 'save'}
         </button>
         <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
-          ${isDeleting ? 'deleting...' : 'delete'}
+          ${isNew ? 'Cancel' : isDeleting ? 'deleting...' : 'delete'}
         </button>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
@@ -137,7 +136,7 @@ const createEventEditTemplate = (point, offers, destinations) => {
 };
 
 export default class EventEdit extends SmartView {
-  constructor(point, offers, destinations) {
+  constructor(point, offers, destinations, isNewPoint) {
     super();
     this._data = EventEdit.parsePointToData(point);
     this._element = null;
@@ -145,6 +144,7 @@ export default class EventEdit extends SmartView {
     this._datepickerTo = null;
     this._offers = offers;
     this._destinations = destinations;
+    this._newPoint = isNewPoint;
 
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
@@ -179,7 +179,7 @@ export default class EventEdit extends SmartView {
   }
 
   getTemplate() {
-    return createEventEditTemplate(this._data, this._offers, this._destinations);
+    return createEventEditTemplate(this._data, this._offers, this._destinations, this._newPoint);
   }
 
   restoreHandlers() {
