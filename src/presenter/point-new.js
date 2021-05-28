@@ -21,8 +21,7 @@ export default class PointNew {
       return;
     }
 
-    //Поддержать во вьюшке отсутствие данных - значит создается новая точка
-    this._eventEditComponent = new EventEditView(defaultPoint, this._offers, this._destinations);
+    this._eventEditComponent = new EventEditView(defaultPoint, this._offers, this._destinations, true);
     this._eventEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._eventEditComponent.setDeleteClickHandler(this._handleDeleteClick);
     this._eventEditComponent.setFormClickHandler(this._handleDeleteClick);
