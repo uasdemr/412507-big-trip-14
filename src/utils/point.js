@@ -53,7 +53,13 @@ export const formatToDayHourMinutes = (val) => {
   const days = zeroPad(dayjs.duration(val, 'minutes').days());
   const hours = zeroPad(dayjs.duration(val, 'minutes').hours());
   const minutes = zeroPad(dayjs.duration(val, 'minutes').minutes());
-  return `${days}D ${hours}H ${minutes}M`;
+  if(days > 0) {
+    return `${days}D ${hours}H ${minutes}M`;
+  } else if(hours > 0) {
+    return `${hours}H ${minutes}M`;
+  } else {
+    return `${minutes}M`;
+  }
 };
 
 export const timeMakerDayJs = (point) => {

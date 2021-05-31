@@ -12,18 +12,19 @@ const BAR_HEIGHT = 55;
 
 const pricePointByType = (points, type) => {
   const filteredByTypePoint = points.filter((point) => point.type === type);
+
   return filteredByTypePoint.reduce((acc1, point) => {
-    const offersCost = point.offers.reduce((acc2, offer) => acc2 + offer.price, 0);
-    return acc1 + point.basePrice + offersCost;
+    return acc1 + point.basePrice;
   }, 0);
 };
 
 const renderMoneyChart = (points) => {
   const moneyCtx = document.querySelector('.statistics__chart--money');
 
-  const labels = Object.values(EVENT_TYPES);
-  const reducedPrices = Object.keys(EVENT_TYPES).map((type) => pricePointByType(points, type));
-  const sortedReducedPrices = reducedPrices.sort((a, b) => a < b);
+  const reducedPrices = Object.keys(EVENT_TYPES).map((type) => ({type:type,value: pricePointByType(points, type)}));
+  const sortedPrices = reducedPrices.sort((a,b) => a.value < b.value);
+  const labels = sortedPrices.map((it) => it.type);
+  const valuesForGraphic = sortedPrices.map((it) => it.value);
 
   moneyCtx.height = BAR_HEIGHT * labels.length;
 
@@ -33,7 +34,7 @@ const renderMoneyChart = (points) => {
     data: {
       labels: labels,
       datasets: [{
-        data: sortedReducedPrices,
+        data: valuesForGraphic,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
@@ -100,9 +101,10 @@ const usedPointByType = (points, type) => {
 const renderTypeChart = (points) => {
   const typeCtx = document.querySelector('.statistics__chart--transport');
 
-  const labels = Object.values(EVENT_TYPES);
-  const typeUsedLengths = Object.keys(EVENT_TYPES).map((type) => usedPointByType(points, type));
-  const sortedTypeUsedLengths = typeUsedLengths.sort((a, b) => a < b);
+  const typeUsedLengths = Object.keys(EVENT_TYPES).map((type) => ({type: type, value: usedPointByType(points, type)}));
+  const sortedTypes = typeUsedLengths.sort((a,b) => a.value < b.value);
+  const labels = sortedTypes.map((it) => it.type);
+  const valuesForGraphic = sortedTypes.map((it) => it.value);
 
   typeCtx.height = BAR_HEIGHT * labels.length;
 
@@ -112,7 +114,7 @@ const renderTypeChart = (points) => {
     data: {
       labels: labels,
       datasets: [{
-        data: sortedTypeUsedLengths,
+        data: valuesForGraphic,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
@@ -182,9 +184,11 @@ const getTypeDuration = (points, type) => {
 const renderTimeSpendChart = (points) => {
   const timeCtx = document.querySelector('.statistics__chart--time');
 
-  const labels = Object.values(EVENT_TYPES);
-  const typeDuration = Object.keys(EVENT_TYPES).map((type) => getTypeDuration(points, type));
-  const sortedTypeDuration = typeDuration.sort((a, b) => a < b);
+  const typeDuration = Object.keys(EVENT_TYPES).map((type) => ({type: type, value: getTypeDuration(points, type)}));
+  const sortedDurations = typeDuration.sort((a,b) => a.value < b.value);
+  const labels = sortedDurations.map((it) => it.type);
+  const valuesForGraphic = sortedDurations.map((it) => it.value);
+
   timeCtx.height = BAR_HEIGHT * labels.length;
 
   return new Chart(timeCtx, {
@@ -193,7 +197,7 @@ const renderTimeSpendChart = (points) => {
     data: {
       labels: labels,
       datasets: [{
-        data: sortedTypeDuration,
+        data: valuesForGraphic,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
