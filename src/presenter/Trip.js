@@ -154,7 +154,8 @@ export default class Trip {
         this._api.updatePoint(update).then((response) => {
           this._pointsModel.updatePoint(updateType, response);
         })
-          .catch(() => {
+          .catch((e) => {
+            console.log(e.message);
             this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
           });
         break;

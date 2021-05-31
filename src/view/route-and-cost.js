@@ -66,8 +66,10 @@ export default class RouteAndCost extends SmartView {
     return createRouteAndCostTemplate(this._pointsModel.getPoints());
   }
 
-  _handleModelEvent(updateType, data) {
-    console.log(updateType, data);
+  restoreHandlers() {
+  }
+
+  _handleModelEvent() {
     this.updateElement();
   }
 }
