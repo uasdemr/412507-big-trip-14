@@ -31,6 +31,12 @@ export const createEmptyPoint = () => {
   };
 };
 
+export const isBetween = (point) => {
+  const dateFrom = point.dateFrom;
+  const dateTo = point.dateTo;
+  return new Date(dateFrom) < Date.now() && new Date(dateTo) >= Date.now();
+};
+
 export const isFeature = (dateFrom) => {
   return new Date(dateFrom) >= Date.now();
 };
