@@ -210,7 +210,7 @@ export default class Trip {
       remove(this._routeAndCostComponent);
       this._routeAndCostComponent = null;
     }
-    this._routeAndCostComponent = new RouteAndCostView(this._pointsModel.getPoints());
+    this._routeAndCostComponent = new RouteAndCostView(this._pointsModel);
     render(this._tripMainElement, this._routeAndCostComponent, RenderPosition.AFTERBEGIN);
   }
 

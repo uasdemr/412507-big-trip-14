@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 
 const MAX_SHOWED_CITIES_COUNT = 3;
 
@@ -32,11 +32,6 @@ const getTripInfoTitle = (points) => {
 };
 
 const createRouteAndCostTemplate = (points) => {
-  const startTripPoint = points.length ? points[0] : null;
-  const endTripPoint = points.length ? points[points.length - 1] : null;
-
-  console.log(startTripPoint, endTripPoint);
-
   const totalTripCost = points.reduce((acc1, point) => {
     const offersCost = point.offers.reduce((acc2, offer) => acc2 + offer.price, 0);
     return acc1 + point.basePrice + offersCost;
@@ -56,14 +51,23 @@ const createRouteAndCostTemplate = (points) => {
 };
 
 
-export default class RouteAndCost extends AbstractView {
-  constructor(points) {
+export default class RouteAndCost extends SmartView {
+  constructor(pointsModel) {
     super();
-    this._points = points;
+    this._pointsModel = pointsModel;
     this._element = null;
+
+    this._handleModelEvent = this._handleModelEvent.bind(this);
+
+    this._pointsModel.addObserver(this._handleModelEvent);
   }
 
   getTemplate() {
-    return createRouteAndCostTemplate(this._points);
+    return createRouteAndCostTemplate(this._pointsModel.getPoints());
+  }
+
+  _handleModelEvent(updateType, data) {
+    console.log(updateType, data);
+    this.updateElement();
   }
 }
