@@ -23,6 +23,7 @@ const renderMoneyChart = (points) => {
 
   const labels = Object.values(EVENT_TYPES);
   const reducedPrices = Object.keys(EVENT_TYPES).map((type) => pricePointByType(points, type));
+  const sortedReducedPrices = reducedPrices.sort((a, b) => a < b);
 
   moneyCtx.height = BAR_HEIGHT * labels.length;
 
@@ -32,7 +33,7 @@ const renderMoneyChart = (points) => {
     data: {
       labels: labels,
       datasets: [{
-        data: reducedPrices,
+        data: sortedReducedPrices,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
@@ -101,6 +102,7 @@ const renderTypeChart = (points) => {
 
   const labels = Object.values(EVENT_TYPES);
   const typeUsedLengths = Object.keys(EVENT_TYPES).map((type) => usedPointByType(points, type));
+  const sortedTypeUsedLengths = typeUsedLengths.sort((a, b) => a < b);
 
   typeCtx.height = BAR_HEIGHT * labels.length;
 
@@ -110,7 +112,7 @@ const renderTypeChart = (points) => {
     data: {
       labels: labels,
       datasets: [{
-        data: typeUsedLengths,
+        data: sortedTypeUsedLengths,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
@@ -182,7 +184,7 @@ const renderTimeSpendChart = (points) => {
 
   const labels = Object.values(EVENT_TYPES);
   const typeDuration = Object.keys(EVENT_TYPES).map((type) => getTypeDuration(points, type));
-
+  const sortedTypeDuration = typeDuration.sort((a, b) => a < b);
   timeCtx.height = BAR_HEIGHT * labels.length;
 
   return new Chart(timeCtx, {
@@ -191,7 +193,7 @@ const renderTimeSpendChart = (points) => {
     data: {
       labels: labels,
       datasets: [{
-        data: typeDuration,
+        data: sortedTypeDuration,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
