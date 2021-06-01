@@ -203,7 +203,7 @@ export default class EventEdit extends SmartView {
         enableTime: true,
         dateFormat: 'd/m/y H:i',
         'time_24hr': true,
-        defaultDate: this._data.dataFrom,
+        defaultDate: this._data.dateFrom,
         onChange: this._dateFromChangeHandler,
       });
   }
@@ -220,7 +220,7 @@ export default class EventEdit extends SmartView {
         dateFormat: 'd/m/y H:i',
         'time_24hr': true,
         minDate: this._data.dateFrom,
-        defaultDate: this._data.dataTo,
+        defaultDate: this._data.dateTo,
         onChange: this._dateToChangeHandler,
       });
   }
