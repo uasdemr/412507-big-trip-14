@@ -1,4 +1,4 @@
-import { timeMakerDayJs } from '../utils/point.js';
+import { timeMakeDayJs } from '../utils/point.js';
 import { EVENT_TYPES } from './const.js';
 import SmartView from './smart.js';
 import flatpickr from 'flatpickr';
@@ -6,7 +6,7 @@ import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const createEventDestination = (point, destinations) => {
-  const imgCreator = (pictures) => {
+  const imgCreate = (pictures) => {
 
     return pictures.map((picture) => {
       return `<img class="event__photo"
@@ -24,7 +24,7 @@ const createEventDestination = (point, destinations) => {
 
     <div class="event__photos-container">
       <div class="event__photos-tape">
-        ${imgCreator(destination.pictures)}
+        ${imgCreate(destination.pictures)}
       </div>
     </div>
   </section>`;
@@ -63,7 +63,7 @@ const createPointDestinationList = (destinations) => {
 
 const createEventEditTemplate = (point, offers, destinations, isNew) => {
   const { isDisabled, isSaving, isDeleting } = point;
-  const dates = timeMakerDayJs(point);
+  const dates = timeMakeDayJs(point);
   const eventTypeItem = () => {
     return Object.entries(EVENT_TYPES).map(([key, val]) => {
       const checked = point.type === key;
@@ -286,10 +286,7 @@ export default class EventEdit extends SmartView {
     if (form.checkValidity()) {
       evt.preventDefault();
       this._callback.formSubmit(EventEdit.parseDataToPoint(this._data));
-    } else {
-      return;
     }
-
   }
 
   _formBtnCloseClickHandler(evt) {

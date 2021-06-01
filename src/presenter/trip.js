@@ -50,10 +50,7 @@ export default class Trip {
 
     this._pointNewPresenter = new PointNewPresenter(this._eventListComponent, this._handleViewAction, this._offers, this._destinations);
 
-    document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
-      evt.preventDefault();
-      this.createPoint();
-    });
+    this._newPointButtonAddHandler();
   }
 
   init() {
@@ -76,6 +73,13 @@ export default class Trip {
     this._currentSortType = SortType.DEFAULT;
     this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this._pointNewPresenter.init(this._createEmptyPoint());
+  }
+
+  _newPointButtonAddHandler() {
+    document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+      evt.preventDefault();
+      this.createPoint();
+    });
   }
 
   _getPoints() {
@@ -124,14 +128,12 @@ export default class Trip {
         remove(this._sortComponent);
         remove(this._siteMenuComponent);
         this._statisticsComponent.show();
-        // this._statisticsComponent._setCharts();
         this._renderNavigation();
         break;
     }
   }
 
   _handleSortTypeChange(sortType) {
-    // - Сортируем задачи
     if (this._currentSortType === sortType) {
       return;
     }
@@ -154,13 +156,11 @@ export default class Trip {
         this._api.updatePoint(update).then((response) => {
           this._pointsModel.updatePoint(updateType, response);
         })
-          .catch((e) => {
-            console.log(e.message);
+          .catch(() => {
             this._pointPresenter[update.id].setViewState(PointPresenterViewState.ABORTING);
           });
         break;
       case UserAction.ADD_POINT:
-        // this._pointsModel.addPoint(updateType, update);
         this._pointNewPresenter.setSaving();
         this._api.addPoint(update).then((response) => {
           this._pointsModel.addPoint(updateType, response);

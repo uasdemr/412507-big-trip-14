@@ -62,14 +62,11 @@ export const formatToDayHourMinutes = (val) => {
   }
 };
 
-export const timeMakerDayJs = (point) => {
+export const timeMakeDayJs = (point) => {
   const dayjs1 = dayjs(point.dateFrom);
   const dayjs2 = dayjs(point.dateTo);
   const diffInMinutes = dayjs2.diff(dayjs1, 'minute');
 
-  // const days = zeroPad(dayjs.duration(diffInMinutes, 'minutes').days());
-  // const hours = zeroPad(dayjs.duration(diffInMinutes, 'minutes').hours());
-  // const minutes = zeroPad(dayjs.duration(diffInMinutes, 'minutes').minutes());
   const diffReturned = formatToDayHourMinutes(diffInMinutes);
 
   const eventStartTimeDateTime = dayjs1.format('YYYY-MM-DDTHH:mm');

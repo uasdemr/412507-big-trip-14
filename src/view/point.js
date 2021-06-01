@@ -1,4 +1,4 @@
-import { timeMakerDayJs } from '../utils/point.js';
+import { timeMakeDayJs } from '../utils/point.js';
 import AbstractView from './abstract.js';
 
 const createOfferItem = (offers) => {
@@ -13,7 +13,7 @@ const createOfferItem = (offers) => {
 
 const createListTemplate = (point) => {
   const eventFavoriteBtnClassName = point.isFavorite ? 'event__favorite-btn--active' : '';
-  const dateObj = timeMakerDayJs(point);
+  const dateObj = timeMakeDayJs(point);
   const event = `${point.type} ${point.destination.name}`;
 
   return `<li class="trip-events__item">

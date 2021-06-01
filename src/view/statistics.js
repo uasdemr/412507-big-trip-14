@@ -10,6 +10,7 @@ dayjs.extend(duration);
 
 const BAR_HEIGHT = 55;
 
+///////////////////////////
 const pricePointByType = (points, type) => {
   const filteredByTypePoint = points.filter((point) => point.type === type);
 
@@ -18,160 +19,8 @@ const pricePointByType = (points, type) => {
   }, 0);
 };
 
-const renderMoneyChart = (points) => {
-  const moneyCtx = document.querySelector('.statistics__chart--money');
-
-  const reducedPrices = Object.keys(EVENT_TYPES).map((type) => ({type:type,value: pricePointByType(points, type)}));
-  const sortedPrices = reducedPrices.sort((a,b) => a.value < b.value);
-  const labels = sortedPrices.map((it) => it.type);
-  const valuesForGraphic = sortedPrices.map((it) => it.value);
-
-  moneyCtx.height = BAR_HEIGHT * labels.length;
-
-  return new Chart(moneyCtx, {
-    plugins: [ChartDataLabels],
-    type: 'horizontalBar',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: valuesForGraphic,
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
-        anchor: 'start',
-      }],
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 13,
-          },
-          color: '#000000',
-          anchor: 'end',
-          align: 'start',
-          formatter: (val) => `€ ${val}`,
-        },
-      },
-      title: {
-        display: true,
-        text: 'MONEY',
-        fontColor: '#000000',
-        fontSize: 23,
-        position: 'left',
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            fontColor: '#000000',
-            padding: 5,
-            fontSize: 13,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          barThickness: 44,
-        }],
-        xAxes: [{
-          ticks: {
-            display: false,
-            beginAtZero: true,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          minBarLength: 50,
-        }],
-      },
-      legend: {
-        display: false,
-      },
-      tooltips: {
-        enabled: false,
-      },
-    },
-  });
-};
-
 const usedPointByType = (points, type) => {
   return points.filter((point) => point.type === type).length;
-};
-
-const renderTypeChart = (points) => {
-  const typeCtx = document.querySelector('.statistics__chart--transport');
-
-  const typeUsedLengths = Object.keys(EVENT_TYPES).map((type) => ({type: type, value: usedPointByType(points, type)}));
-  const sortedTypes = typeUsedLengths.sort((a,b) => a.value < b.value);
-  const labels = sortedTypes.map((it) => it.type);
-  const valuesForGraphic = sortedTypes.map((it) => it.value);
-
-  typeCtx.height = BAR_HEIGHT * labels.length;
-
-  return new Chart(typeCtx, {
-    plugins: [ChartDataLabels],
-    type: 'horizontalBar',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: valuesForGraphic,
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
-        anchor: 'start',
-      }],
-    },
-    options: {
-      plugins: {
-        datalabels: {
-          font: {
-            size: 13,
-          },
-          color: '#000000',
-          anchor: 'end',
-          align: 'start',
-          formatter: (val) => `${val}x`,
-        },
-      },
-      title: {
-        display: true,
-        text: 'TYPE',
-        fontColor: '#000000',
-        fontSize: 23,
-        position: 'left',
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            fontColor: '#000000',
-            padding: 5,
-            fontSize: 13,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          barThickness: 44,
-        }],
-        xAxes: [{
-          ticks: {
-            display: false,
-            beginAtZero: true,
-          },
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          minBarLength: 50,
-        }],
-      },
-      legend: {
-        display: false,
-      },
-      tooltips: {
-        enabled: false,
-      },
-    },
-  });
 };
 
 const getTypeDuration = (points, type) => {
@@ -180,18 +29,26 @@ const getTypeDuration = (points, type) => {
     return acc1 + dayjs(point.dateTo).diff(dayjs(point.dateFrom), 'minutes');
   }, 0);
 };
+//////////////////////////
+const makeGraphicsData = (points, callback) => {
+  const reducedPrices = Object.keys(EVENT_TYPES).map((type) => ({ type: type, value: callback(points, type) }));
+  const sortedPrices = reducedPrices.sort((a, b) => a.value < b.value);
+  const labels = sortedPrices.map((it) => it.type);
+  const valuesForGraphic = sortedPrices.map((it) => it.value);
+  return [labels, valuesForGraphic];
+};
 
-const renderTimeSpendChart = (points) => {
-  const timeCtx = document.querySelector('.statistics__chart--time');
+const moneyChartFormat = (val) => `€ ${val}`;
+const typeChartFormat = (val) => `${val}x`;
+const timeSpendFormat = (val) => {
+  return val === 0 ? '0M' : formatToDayHourMinutes(val);
+};
 
-  const typeDuration = Object.keys(EVENT_TYPES).map((type) => ({type: type, value: getTypeDuration(points, type)}));
-  const sortedDurations = typeDuration.sort((a,b) => a.value < b.value);
-  const labels = sortedDurations.map((it) => it.type);
-  const valuesForGraphic = sortedDurations.map((it) => it.value);
 
-  timeCtx.height = BAR_HEIGHT * labels.length;
+const renderChart = (ctx, labels, valuesForGraphic, formatter) => {
+  ctx.height = BAR_HEIGHT * labels.length;
 
-  return new Chart(timeCtx, {
+  return new Chart(ctx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
@@ -212,14 +69,12 @@ const renderTimeSpendChart = (points) => {
           color: '#000000',
           anchor: 'end',
           align: 'start',
-          formatter: (val) => {
-            return val === 0 ? '0M' : formatToDayHourMinutes(val);
-          },
+          formatter: formatter,
         },
       },
       title: {
         display: true,
-        text: 'TIME-SPEND',
+        text: 'MONEY',
         fontColor: '#000000',
         fontSize: 23,
         position: 'left',
@@ -328,9 +183,17 @@ export default class Statistics extends SmartView {
   _setCharts() {
     const points = this._getPoints();
 
-    this._moneyChart = renderMoneyChart(points);
-    this._typeChart = renderTypeChart(points);
-    this._timeSpendChart = renderTimeSpendChart(points);
+    const moneyCtx = document.querySelector('.statistics__chart--money');
+    const typeCtx = document.querySelector('.statistics__chart--transport');
+    const timeCtx = document.querySelector('.statistics__chart--time');
+
+    const moneyData = makeGraphicsData(points, pricePointByType);
+    const typeData = makeGraphicsData(points, usedPointByType);
+    const timeDurationData = makeGraphicsData(points, getTypeDuration);
+
+    this._moneyChart = renderChart(moneyCtx, ...moneyData, moneyChartFormat);
+    this._typeChart = renderChart(typeCtx, ...typeData, typeChartFormat);
+    this._timeSpendChart = renderChart(timeCtx, ...timeDurationData, timeSpendFormat);
   }
 }
 
