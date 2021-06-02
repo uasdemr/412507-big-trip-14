@@ -124,6 +124,7 @@ export default class Point {
   _replaceFormToPoint() {
     replace(this._pointComponent, this._eventEditComponent);
     this._mode = Mode.DEFAULT;
+    document.removeEventListener('keydown', this._onEscKeyDown);
   }
 
   _onEscKeyDown(evt) {
